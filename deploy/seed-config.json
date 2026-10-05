@@ -1,0 +1,31 @@
+{
+  "datasets": [
+    {
+      "name": "产品说明书",
+      "description": "云帆科技产品说明书（YF-Suite / YF-GW2000）",
+      "folder": "seed/knowledge-base/01-product-manual"
+    },
+    {
+      "name": "技术文档",
+      "description": "OpenAPI 集成指南、固件升级技术说明等",
+      "folder": "seed/knowledge-base/02-technical-docs"
+    },
+    {
+      "name": "IT运维SOP",
+      "description": "Windows 故障、网络故障、VPN 配置、邮箱问题标准处理流程",
+      "folder": "seed/knowledge-base/03-it-ops-sop"
+    },
+    {
+      "name": "售后流程",
+      "description": "退换货维修、工单升级与 SLA 管理流程",
+      "folder": "seed/knowledge-base/04-after-sales"
+    },
+    {
+      "name": "FAQ",
+      "description": "YF-Suite 与 YF-GW2000 常见问题",
+      "folder": "seed/knowledge-base/05-faq"
+    }
+  ],
+  "app_dsl": "seed/apps/enterprise-ai-knowledge-assistant.yml",
+  "notes": "导入后请在 Dify 控制台打开应用，在「企业知识库检索」节点重新绑定上面创建的知识库数据集。"
+}
