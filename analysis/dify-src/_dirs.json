@@ -1,0 +1,314 @@
+{
+  "sdks": [
+    {
+      "name": "README.md",
+      "type": "file",
+      "path": "sdks/README.md",
+      "size": 277
+    },
+    {
+      "name": "nodejs-client",
+      "type": "dir",
+      "path": "sdks/nodejs-client",
+      "size": 0
+    },
+    {
+      "name": "php-client",
+      "type": "dir",
+      "path": "sdks/php-client",
+      "size": 0
+    }
+  ],
+  "api/controllers/service_api/app": [
+    {
+      "name": "__init__.py",
+      "type": "file",
+      "path": "api/controllers/service_api/app/__init__.py",
+      "size": 0
+    },
+    {
+      "name": "annotation.py",
+      "type": "file",
+      "path": "api/controllers/service_api/app/annotation.py",
+      "size": 13406
+    },
+    {
+      "name": "app.py",
+      "type": "file",
+      "path": "api/controllers/service_api/app/app.py",
+      "size": 5405
+    },
+    {
+      "name": "audio.py",
+      "type": "file",
+      "path": "api/controllers/service_api/app/audio.py",
+      "size": 10220
+    },
+    {
+      "name": "completion.py",
+      "type": "file",
+      "path": "api/controllers/service_api/app/completion.py",
+      "size": 21830
+    },
+    {
+      "name": "conversation.py",
+      "type": "file",
+      "path": "api/controllers/service_api/app/conversation.py",
+      "size": 17997
+    },
+    {
+      "name": "error.py",
+      "type": "file",
+      "path": "api/controllers/service_api/app/error.py",
+      "size": 3834
+    },
+    {
+      "name": "file.py",
+      "type": "file",
+      "path": "api/controllers/service_api/app/file.py",
+      "size": 3976
+    },
+    {
+      "name": "file_preview.py",
+      "type": "file",
+      "path": "api/controllers/service_api/app/file_preview.py",
+      "size": 6367
+    },
+    {
+      "name": "human_input_form.py",
+      "type": "file",
+      "path": "api/controllers/service_api/app/human_input_form.py",
+      "size": 8160
+    },
+    {
+      "name": "message.py",
+      "type": "file",
+      "path": "api/controllers/service_api/app/message.py",
+      "size": 11607
+    },
+    {
+      "name": "site.py",
+      "type": "file",
+      "path": "api/controllers/service_api/app/site.py",
+      "size": 2140
+    },
+    {
+      "name": "workflow.py",
+      "type": "file",
+      "path": "api/controllers/service_api/app/workflow.py",
+      "size": 25699
+    },
+    {
+      "name": "workflow_events.py",
+      "type": "file",
+      "path": "api/controllers/service_api/app/workflow_events.py",
+      "size": 7701
+    }
+  ],
+  "api/core/rag/retrieval": [
+    {
+      "name": "__init__.py",
+      "type": "file",
+      "path": "api/core/rag/retrieval/__init__.py",
+      "size": 0
+    },
+    {
+      "name": "dataset_retrieval.py",
+      "type": "file",
+      "path": "api/core/rag/retrieval/dataset_retrieval.py",
+      "size": 96966
+    },
+    {
+      "name": "output_parser",
+      "type": "dir",
+      "path": "api/core/rag/retrieval/output_parser",
+      "size": 0
+    },
+    {
+      "name": "retrieval_methods.py",
+      "type": "file",
+      "path": "api/core/rag/retrieval/retrieval_methods.py",
+      "size": 588
+    },
+    {
+      "name": "router",
+      "type": "dir",
+      "path": "api/core/rag/retrieval/router",
+      "size": 0
+    },
+    {
+      "name": "template_prompts.py",
+      "type": "file",
+      "path": "api/core/rag/retrieval/template_prompts.py",
+      "size": 3554
+    }
+  ],
+  "api/core/rag/extractor": [
+    {
+      "name": "blob",
+      "type": "dir",
+      "path": "api/core/rag/extractor/blob",
+      "size": 0
+    },
+    {
+      "name": "csv_extractor.py",
+      "type": "file",
+      "path": "api/core/rag/extractor/csv_extractor.py",
+      "size": 2889
+    },
+    {
+      "name": "entity",
+      "type": "dir",
+      "path": "api/core/rag/extractor/entity",
+      "size": 0
+    },
+    {
+      "name": "excel_extractor.py",
+      "type": "file",
+      "path": "api/core/rag/extractor/excel_extractor.py",
+      "size": 15507
+    },
+    {
+      "name": "extract_processor.py",
+      "type": "file",
+      "path": "api/core/rag/extractor/extract_processor.py",
+      "size": 15740
+    },
+    {
+      "name": "extractor_base.py",
+      "type": "file",
+      "path": "api/core/rag/extractor/extractor_base.py",
+      "size": 244
+    },
+    {
+      "name": "firecrawl",
+      "type": "dir",
+      "path": "api/core/rag/extractor/firecrawl",
+      "size": 0
+    },
+    {
+      "name": "helpers.py",
+      "type": "file",
+      "path": "api/core/rag/extractor/helpers.py",
+      "size": 1910
+    },
+    {
+      "name": "html_extractor.py",
+      "type": "file",
+      "path": "api/core/rag/extractor/html_extractor.py",
+      "size": 860
+    },
+    {
+      "name": "jina_reader_extractor.py",
+      "type": "file",
+      "path": "api/core/rag/extractor/jina_reader_extractor.py",
+      "size": 1571
+    },
+    {
+      "name": "markdown_extractor.py",
+      "type": "file",
+      "path": "api/core/rag/extractor/markdown_extractor.py",
+      "size": 4128
+    },
+    {
+      "name": "notion_extractor.py",
+      "type": "file",
+      "path": "api/core/rag/extractor/notion_extractor.py",
+      "size": 16114
+    },
+    {
+      "name": "pdf_extractor.py",
+      "type": "file",
+      "path": "api/core/rag/extractor/pdf_extractor.py",
+      "size": 7375
+    },
+    {
+      "name": "text_extractor.py",
+      "type": "file",
+      "path": "api/core/rag/extractor/text_extractor.py",
+      "size": 1868
+    },
+    {
+      "name": "unstructured",
+      "type": "dir",
+      "path": "api/core/rag/extractor/unstructured",
+      "size": 0
+    },
+    {
+      "name": "watercrawl",
+      "type": "dir",
+      "path": "api/core/rag/extractor/watercrawl",
+      "size": 0
+    },
+    {
+      "name": "word_extractor.py",
+      "type": "file",
+      "path": "api/core/rag/extractor/word_extractor.py",
+      "size": 21729
+    }
+  ],
+  "api/core/rag/index_processor": [
+    {
+      "name": "__init__.py",
+      "type": "file",
+      "path": "api/core/rag/index_processor/__init__.py",
+      "size": 0
+    },
+    {
+      "name": "constant",
+      "type": "dir",
+      "path": "api/core/rag/index_processor/constant",
+      "size": 0
+    },
+    {
+      "name": "index_processor.py",
+      "type": "file",
+      "path": "api/core/rag/index_processor/index_processor.py",
+      "size": 13941
+    },
+    {
+      "name": "index_processor_base.py",
+      "type": "file",
+      "path": "api/core/rag/index_processor/index_processor_base.py",
+      "size": 13618
+    },
+    {
+      "name": "processor",
+      "type": "dir",
+      "path": "api/core/rag/index_processor/processor",
+      "size": 0
+    }
+  ],
+  "api/core/app/apps/chat": [
+    {
+      "name": "__init__.py",
+      "type": "file",
+      "path": "api/core/app/apps/chat/__init__.py",
+      "size": 0
+    },
+    {
+      "name": "app_config_manager.py",
+      "type": "file",
+      "path": "api/core/app/apps/chat/app_config_manager.py",
+      "size": 6899
+    },
+    {
+      "name": "app_generator.py",
+      "type": "file",
+      "path": "api/core/app/apps/chat/app_generator.py",
+      "size": 11611
+    },
+    {
+      "name": "app_runner.py",
+      "type": "file",
+      "path": "api/core/app/apps/chat/app_runner.py",
+      "size": 10127
+    },
+    {
+      "name": "generate_response_converter.py",
+      "type": "file",
+      "path": "api/core/app/apps/chat/generate_response_converter.py",
+      "size": 4695
+    }
+  ]
+}
