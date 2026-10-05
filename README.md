@@ -2,9 +2,10 @@
 
 企业级 AI 知识助手 —— 基于 [Dify](https://github.com/langgenius/dify) 平台改造的**企业文档智能问答系统**。
 
-员工与一线客服通过自然语言即可查询**产品说明书、技术文档、IT 运维 SOP、售后流程、FAQ**；AI 回答基于企业知识库内容生成、**强制附引用来源**，检索不到依据时**自动转人工**，从机制上减少幻觉。
+员工与一线客服通过自然语言即可查询**产品说明书、技术文档、IT 运维 SOP、售后流程、FAQ**；AI 回答基于企业知识库内容生成、**强制附引用来源**，检索不到依据时**自动转人工**，从机制上减少幻觉。支持**国产大模型接入**（DeepSeek / 通义千问 / 智谱 AI / 月之暗面）与**中国大陆网络环境部署**（镜像加速 + 全链路国产化），可作为中国企业真实部署案例。
 
 > 定位：AI 应用实施工程师作品集项目（配置 + 数据 + 文档层改造，最大化复用上游平台能力，不重构上游代码）。
+> 中文部署指南见 [README_CN.md](README_CN.md)。
 
 ---
 
@@ -45,6 +46,24 @@
 
 架构分析详见 [`analysis/ARCHITECTURE.md`](analysis/ARCHITECTURE.md)，改造方案详见 [`docs/TRANSFORMATION.md`](docs/TRANSFORMATION.md)。
 
+**架构图：**
+
+```mermaid
+flowchart TB
+    U[员工 / 客服] -->|浏览器访问| WEB[Dify Web 前端<br/>Next.js]
+    WEB --> API[Dify API 服务<br/>Flask + Celery]
+    API --> KB[(企业知识库<br/>5 数据集 / 12 篇文档)]
+    API --> WF[工作流引擎<br/>start → 知识检索 → if-else → LLM/兜底]
+    WF -->|命中| LLM1[LLM 基于知识库回答<br/>防幻觉提示词 + 引用标注]
+    WF -->|未命中| LLM2[兜底应答<br/>转 IT 服务台 / 工单]
+    LLM1 --> ANS[回答 + 引用卡片]
+    LLM2 --> ANS2[兜底回答]
+    API --> PG[(PostgreSQL)]
+    API --> RD[(Redis)]
+    API --> VDB[(Weaviate 向量库<br/>Embedding 检索)]
+    API --> MP[模型供应商抽象层<br/>DeepSeek / 通义千问 / 智谱 AI / 月之暗面 / OpenAI]
+```
+
 ## 5. 核心功能
 
 - **文档上传 / 知识库管理**：支持 PDF / Word / Markdown 等格式；5 个数据集按分类管理，命中测试验证检索质量（`docs/DEPLOYMENT.md` 初始化清单第 2、4 步）。
@@ -53,6 +72,8 @@
 - **引用来源**：聊天界面渲染引用卡片，回答末尾标注「引用：[文档名]」，可回溯可审计。
 - **对话历史**：Web App 会话管理 + LLM 节点记忆窗口。
 - **工作流自动处理问题**：命中回答 / 未命中转人工，一次配置全自动路由。
+- **国产模型适配**：模型供应商抽象层支持 DeepSeek / 通义千问 / 智谱 AI / 月之暗面 / OpenAI 一键切换，零代码（见 [README_CN.md](README_CN.md) 第 4 节）。
+- **国内部署能力**：Docker 镜像加速配置、国内服务器/云平台/本地 Docker 三种部署方案，全链路国产化（见 [README_CN.md](README_CN.md)）。
 
 ## 6. 使用截图
 
@@ -70,7 +91,21 @@
 
 ![知识库管理](screenshots/03-knowledge-base.png)
 
-## 7. 快速开始（部署方式）
+## 7. 国产化适配与国内部署
+
+针对**中国大陆用户/企业**的访问优化已内置：
+
+| 环节 | 优化内容 |
+| --- | --- |
+| Docker 镜像 | `deploy/docker/daemon.mirrors.example.json` 加速器模板（国内提速 5-10 倍） |
+| 模型接口 | 国产模型供应商接入文档：DeepSeek / 通义千问 / 智谱 AI / 月之暗面（[docs/CN_MODEL_PROVIDERS.md](docs/CN_MODEL_PROVIDERS.md)） |
+| 数据与资源 | 全本地化：无国外图片 / 文件存储 / CDN 依赖 |
+| 部署方案 | 方案 A 国内服务器 · 方案 B 国内云平台 · 方案 C 本地 Docker |
+| 环境变量 | `.env.example` 覆盖全部配置（站点/密钥/存储/模型/网络） |
+
+完整中文指南见 **[README_CN.md](README_CN.md)**，访问风险审查见 [docs/CN_ACCESS_REVIEW.md](docs/CN_ACCESS_REVIEW.md)。
+
+## 8. 快速开始（部署方式）
 
 前置：Docker + Docker Compose v2.24+，内存 ≥ 4 GiB。
 
@@ -97,7 +132,7 @@ python deploy/scripts/seed-kb.py --base-url http://localhost/v1 --api-key datase
 
 完整部署与验证清单见 [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md)。
 
-## 8. 演示数据
+## 9. 演示数据
 
 12 篇文档（虚构企业「云帆科技」），覆盖 5 大分类（`seed/knowledge-base/`）：
 
@@ -111,14 +146,14 @@ python deploy/scripts/seed-kb.py --base-url http://localhost/v1 --api-key datase
 
 可演示问答清单与案例说明见 [`docs/CASE_STUDY.md`](docs/CASE_STUDY.md)。
 
-## 9. 测试与验证
+## 10. 测试与验证
 
 ```bash
 python scripts/validate_seed.py   # 知识库种子数据：48 PASS / 0 FAIL
 python scripts/validate_dsl.py    # 应用 DSL：30 PASS / 0 FAIL（含 graphon 引擎 schema 真实验证）
 ```
 
-## 10. Git 提交说明
+## 11. Git 提交说明
 
 建议提交记录（本仓库的改造层已按此组织）：
 
@@ -134,20 +169,24 @@ git commit -m "feat: 基于 Dify 平台改造企业知识助手（配置+数据+
 3. `feat: 添加高级对话应用 DSL（知识检索+路由+防幻觉+引用来源，validate_dsl 30 PASS）`
 4. `feat: 添加部署配置与一键导入脚本（.env.enterprise.example / seed-kb.py）`
 5. `docs: 添加 README、部署说明、案例、截图说明`
+6. `feat: 中国大陆访问优化（镜像加速模板 / 国产模型接入 / README_CN / 测试报告）`
 
 > 说明：本仓库为改造层，不含 Dify 上游源码；上游为官方镜像零改造，许可证遵循上游 LICENSE。
 
-## 11. 目录结构
+## 12. 目录结构
 
 ```
 enterprise-ai-knowledge-assistant/
+├── README.md          # 项目主文档（含架构图）
+├── README_CN.md       # 中国大陆部署指南
+├── .env.example       # 全部环境变量示例（含国内模型/镜像项）
 ├── analysis/          # Dify 架构分析（含源码关键文件快照 dify-src/）
-├── docs/              # 改造方案 / 部署说明 / 企业案例 / 截图说明
+├── docs/              # 改造方案 / 部署说明 / 企业案例 / 截图说明 / 风险审查 / 国产模型接入
 ├── seed/
 │   ├── knowledge-base/ # 12 篇演示知识库文档（5 分类）
 │   └── apps/           # 应用 DSL（高级对话 + 工作流）
 ├── deploy/
-│   ├── docker/         # 企业部署环境配置示例
+│   ├── docker/         # 企业部署环境配置 + 国内镜像加速模板
 │   ├── scripts/        # Service API 一键导入脚本
 │   └── seed-config.json
 ├── scripts/            # 校验脚本（validate_seed / validate_dsl）
