@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enterprise AI Knowledge Assistant - 工作流画布示意</title>
+<style>
+  :root{
+    --canvas:#F7F8FA; --node:#FFFFFF; --line:#E3E5E8; --text:#1D2129; --text2:#4E5969;
+    --text3:#86909C; --accent:#F04438; --blue:#3370FF; --green:#00A870; --orange:#FF7D00;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:"Segoe UI","Microsoft YaHei",system-ui,-apple-system,sans-serif;background:var(--canvas);height:100vh;overflow:hidden;}
+  .top{height:46px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px;padding:0 16px;font-size:13px;}
+  .top .title{font-weight:600;}
+  .top .tag{background:#FFE8E6;color:var(--accent);font-size:12px;border-radius:4px;padding:2px 8px;}
+  .top .pill{background:var(--canvas);border:1px solid var(--line);border-radius:6px;padding:4px 10px;color:var(--text2);font-size:12px;}
+  .canvas{position:relative;height:calc(100vh - 46px);overflow:hidden;}
+  .edge{position:absolute;height:2px;background:#C9CDD4;border-radius:2px;z-index:1;}
+  .edge .arrow{position:absolute;right:-5px;top:-4px;width:10px;height:10px;border-top:2px solid #C9CDD4;border-right:2px solid #C9CDD4;transform:rotate(45deg);}
+  .edge.true .arrow{top:-4px;}
+  .node{position:absolute;width:236px;background:var(--node);border:1px solid var(--line);border-radius:12px;box-shadow:0 2px 8px rgba(29,33,41,.05);z-index:2;font-size:13px;}
+  .node .hd{display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--line);}
+  .node .ic{width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700;flex-shrink:0;}
+  .node .hd b{font-size:13px;}
+  .node .bd{padding:8px 12px 10px;color:var(--text2);font-size:12px;line-height:1.6;}
+  .node .bd .k{color:var(--text3);}
+  .node .bd .v{color:var(--text);font-family:Consolas,monospace;font-size:11px;}
+  .node .bd .row{display:flex;justify-content:space-between;padding:2px 0;}
+  .port{position:absolute;width:12px;height:12px;border-radius:50%;background:#C9CDD4;border:2px solid #fff;z-index:3;}
+  .port.out{right:-6px;top:50%;transform:translateY(-50%);}
+  .port.in{left:-6px;top:50%;transform:translateY(-50%);}
+  .port.true{right:-6px;top:22%;}
+  .port.false{right:-6px;top:78%;}
+  .chip{display:inline-block;background:#FFF4EC;color:var(--orange);border-radius:4px;padding:1px 6px;font-size:11px;margin-left:6px;}
+  .chip.blue{background:#EAF2FF;color:var(--blue);}
+  .chip.green{background:#E8F7F0;color:var(--green);}
+</style>
+</head>
+<body>
+  <div class="top">
+    <span class="title">Enterprise AI Knowledge Assistant</span>
+    <span class="tag">高级对话</span>
+    <span class="pill">发布：v1</span>
+    <span class="pill">5 个知识库</span>
+    <span style="margin-left:auto;color:var(--text3);font-size:12px;">工作流：自动处理问题 · 防幻觉三层机制</span>
+  </div>
+
+  <div class="canvas">
+    <!-- 连线 -->
+    <div class="edge" style="left:264px;top:226px;width:84px;"></div>
+    <div class="edge" style="left:566px;top:226px;width:84px;"></div>
+    <div class="edge true" style="left:860px;top:214px;width:60px;"></div>
+    <div class="edge" style="left:860px;top:344px;width:60px;"></div>
+    <div class="edge" style="left:1136px;top:214px;width:64px;"></div>
+    <div class="edge" style="left:1136px;top:344px;width:64px;"></div>
+
+    <!-- 开始 -->
+    <div class="node" style="left:30px;top:190px;">
+      <div class="hd"><div class="ic" style="background:var(--blue);">S</div><b>开始</b></div>
+      <div class="bd">
+        <div class="row"><span class="k">输入</span><span class="v">sys.query</span></div>
+        <div class="row"><span class="k">类型</span><span>文本（用户问题）</span></div>
+      </div>
+      <div class="port out"></div>
+    </div>
+
+    <!-- 知识库检索 -->
+    <div class="node" style="left:348px;top:170px;">
+      <div class="hd"><div class="ic" style="background:var(--orange);">K</div><b>企业知识库检索</b><span class="chip">RAG</span></div>
+      <div class="bd">
+        <div class="row"><span class="k">数据集</span><span class="v">5 个</span></div>
+        <div class="row"><span class="k">检索方式</span><span>多路检索</span></div>
+        <div class="row"><span class="k">top_k</span><span class="v">5</span></div>
+        <div class="row"><span class="k">分数阈值</span><span class="v">0.5</span></div>
+        <div class="row"><span class="k">重排</span><span>已启用</span></div>
+      </div>
+      <div class="port in"></div><div class="port out"></div>
+    </div>
+
+    <!-- IF/ELSE -->
+    <div class="node" style="left:650px;top:190px;">
+      <div class="hd"><div class="ic" style="background:#722ED1;">I</div><b>检索结果判断</b></div>
+      <div class="bd">
+        <div class="row"><span class="k">条件</span><span class="v">result not empty</span></div>
+        <div class="row"><span class="k">命中</span><span>基于知识库回答</span></div>
+        <div class="row"><span class="k">未命中</span><span>兜底转人工</span></div>
+      </div>
+      <div class="port in"></div>
+      <div class="port true" style="background:var(--green);"></div>
+      <div class="port false" style="background:var(--accent);"></div>
+    </div>
+
+    <!-- LLM 回答 -->
+    <div class="node" style="left:920px;top:152px;">
+      <div class="hd"><div class="ic" style="background:var(--accent);">L</div><b>基于知识库回答</b><span class="chip blue">LLM</span></div>
+      <div class="bd">
+        <div class="row"><span class="k">上下文</span><span class="v">检索结果</span></div>
+        <div class="row"><span class="k">温度</span><span class="v">0.2</span></div>
+        <div class="row"><span class="k">记忆窗口</span><span class="v">10 轮</span></div>
+        <div class="row"><span class="k">规则</span><span>仅依据上下文 · 强制引用</span></div>
+      </div>
+      <div class="port in"></div><div class="port out"></div>
+    </div>
+
+    <!-- 回答 -->
+    <div class="node" style="left:1200px;top:152px;">
+      <div class="hd"><div class="ic" style="background:var(--green);">A</div><b>回答</b><span class="chip green">引用卡片</span></div>
+      <div class="bd">
+        <div class="row"><span class="k">输出</span><span class="v">llm_answer.text</span></div>
+        <div class="row"><span class="k">来源</span><span>retriever_resource</span></div>
+      </div>
+      <div class="port in"></div>
+    </div>
+
+    <!-- 兜底 LLM -->
+    <div class="node" style="left:920px;top:300px;">
+      <div class="hd"><div class="ic" style="background:#8C8C8C;">F</div><b>兜底应答</b></div>
+      <div class="bd">
+        <div class="row"><span class="k">行为</span><span>告知未命中 · 转人工</span></div>
+        <div class="row"><span class="k">输出</span><span class="v">llm_fallback.text</span></div>
+      </div>
+      <div class="port in"></div><div class="port out"></div>
+    </div>
+
+    <!-- 兜底回答 -->
+    <div class="node" style="left:1200px;top:300px;">
+      <div class="hd"><div class="ic" style="background:#8C8C8C;">A</div><b>兜底回答</b></div>
+      <div class="bd">
+        <div class="row"><span class="k">输出</span><span class="v">llm_fallback.text</span></div>
+        <div class="row"><span class="k">提示</span><span>建议换问法 / 联系服务台</span></div>
+      </div>
+      <div class="port in"></div>
+    </div>
+  </div>
+</body>
+</html>

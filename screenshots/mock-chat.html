@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enterprise AI Knowledge Assistant - 对话界面示意</title>
+<style>
+  :root{
+    --bg:#F2F3F5; --card:#FFFFFF; --line:#E3E5E8; --text:#1D2129; --text2:#4E5969;
+    --text3:#86909C; --accent:#F04438; --accent-soft:#FFF1F0; --chip:#F2F3F5;
+    --green:#00A870; --side:#FFFFFF;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{height:100%;}
+  body{font-family:"Segoe UI","Microsoft YaHei",system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);display:flex;height:100vh;overflow:hidden;}
+  /* 左侧栏 */
+  .side{width:248px;background:var(--side);border-right:1px solid var(--line);display:flex;flex-direction:column;flex-shrink:0;}
+  .side .logo{display:flex;align-items:center;gap:10px;padding:16px 16px 12px;}
+  .side .logo .mark{width:34px;height:34px;border-radius:9px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;}
+  .side .logo b{font-size:14px;color:var(--text);}
+  .side .logo span{display:block;font-size:11px;color:var(--text3);font-weight:400;}
+  .newchat{margin:8px 12px 14px;background:var(--accent);color:#fff;border:none;border-radius:8px;padding:10px 0;font-size:13px;cursor:pointer;font-weight:600;}
+  .side h6{padding:8px 16px;font-size:11px;color:var(--text3);font-weight:600;letter-spacing:.4px;}
+  .conv{list-style:none;padding:0 8px;}
+  .conv li{padding:8px 10px;border-radius:8px;font-size:13px;color:var(--text2);cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .conv li.active{background:var(--chip);color:var(--text);font-weight:600;}
+  .side .kb{margin-top:auto;padding:12px 14px;border-top:1px solid var(--line);}
+  .side .kb .t{font-size:12px;color:var(--text3);margin-bottom:8px;}
+  .side .kb .row{display:flex;justify-content:space-between;font-size:12px;color:var(--text2);padding:3px 0;}
+  .side .kb .row .n{color:var(--green);font-weight:700;}
+  /* 主区 */
+  .main{flex:1;display:flex;flex-direction:column;min-width:0;}
+  .head{height:52px;background:var(--card);border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 20px;gap:8px;flex-shrink:0;}
+  .head .dot{width:8px;height:8px;border-radius:50%;background:var(--green);}
+  .head b{font-size:14px;}
+  .head .sub{font-size:12px;color:var(--text3);}
+  .chat{flex:1;overflow:auto;padding:12px 0 6px;}
+  .wrap{max-width:760px;margin:0 auto;padding:0 24px;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 16px;margin:10px 0;}
+  .q{font-size:14px;line-height:1.7;}
+  .a{font-size:14px;line-height:1.8;color:var(--text);}
+  .a .ref{color:var(--text3);font-size:12px;display:block;margin-top:10px;border-top:1px dashed var(--line);padding-top:8px;}
+  .cite{margin-top:12px;}
+  .cite .c{display:flex;gap:10px;align-items:flex-start;background:var(--accent-soft);border:1px solid #FFD8D5;border-radius:10px;padding:10px 12px;margin-top:8px;}
+  .cite .c .idx{background:var(--accent);color:#fff;border-radius:6px;font-size:12px;padding:2px 7px;flex-shrink:0;margin-top:2px;}
+  .cite .c .txt b{font-size:13px;color:var(--text);display:block;margin-bottom:2px;}
+  .cite .c .txt p{font-size:12px;color:var(--text2);line-height:1.6;}
+  .score{font-size:11px;color:var(--text3);margin-left:6px;}
+  .user{display:flex;gap:10px;align-items:flex-start;}
+  .avatar{width:28px;height:28px;border-radius:8px;background:#3370FF;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+  .avatar.bot{background:var(--accent);}
+  .greet{text-align:center;padding:8px 0 2px;}
+  .greet h1{font-size:18px;margin-bottom:4px;}
+  .greet p{font-size:12px;color:var(--text3);line-height:1.6;}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:8px;}
+  .chips span{background:var(--card);border:1px solid var(--line);border-radius:14px;font-size:12px;color:var(--text2);padding:4px 10px;}
+  /* 输入区 */
+  .input{flex-shrink:0;padding:10px 24px 18px;}
+  .ibox{max-width:760px;margin:0 auto;background:var(--card);border:1px solid #C9CDD4;border-radius:12px;padding:10px 14px;display:flex;align-items:center;gap:10px;}
+  .ibox .ph{flex:1;font-size:14px;color:var(--text3);}
+  .ibox .send{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:7px 16px;font-size:13px;cursor:pointer;}
+  .meta{max-width:760px;margin:8px auto 0;font-size:11px;color:var(--text3);text-align:center;}
+</style>
+</head>
+<body>
+  <aside class="side">
+    <div class="logo">
+      <div class="mark">YF</div>
+      <b>Enterprise AI<br><span>Knowledge Assistant</span></b>
+    </div>
+    <button class="newchat">+ 新建对话</button>
+    <h6>对话历史</h6>
+    <ul class="conv">
+      <li class="active">VPN 连接超时排查</li>
+      <li>网关固件升级失败处理</li>
+      <li>YF-Suite 浏览器兼容性</li>
+      <li>售后维修时效咨询</li>
+      <li>OpenAPI 集成问题</li>
+    </ul>
+    <div class="kb">
+      <div class="t">知识库（5 个数据集）</div>
+      <div class="row"><span>产品说明书</span><span class="n">2 篇</span></div>
+      <div class="row"><span>技术文档</span><span class="n">2 篇</span></div>
+      <div class="row"><span>IT 运维 SOP</span><span class="n">4 篇</span></div>
+      <div class="row"><span>售后流程</span><span class="n">2 篇</span></div>
+      <div class="row"><span>FAQ</span><span class="n">2 篇</span></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="head">
+      <span class="dot"></span><b>Enterprise AI Knowledge Assistant</b>
+      <span class="sub">· 内部知识助手 · 回答均附引用来源</span>
+    </div>
+
+    <div class="chat">
+      <div class="wrap">
+        <div class="greet">
+          <h1>企业知识助手</h1>
+          <p>可以为您解答产品功能、技术集成、IT 运维、售后流程与常见问题。</p>
+          <div class="chips"><span>YF-Suite 支持哪些浏览器？</span><span>电脑蓝屏了怎么处理？</span><span>VPN 连接超时怎么办？</span><span>网关固件升级失败如何处理？</span></div>
+        </div>
+
+        <div class="user"><div class="avatar">员</div><div class="card q" style="flex:1;">VPN 连接超时怎么办？</div></div>
+
+        <div class="user"><div class="avatar bot">AI</div>
+          <div class="card a" style="flex:1;">
+            建议按以下顺序排查 VPN 连接超时：
+            <br><br>1. 检查本机网络是否正常，可先访问外网验证；
+            <br>2. 尝试 Web 门户模式（https://vpn.yfcloud.cn）验证网关可达性；
+            <br>3. 确认客户端服务器地址填写为 vpn.yfcloud.cn（端口 443）；
+            <br>4. 如仍超时，关闭本机代理软件后重试；
+            <br>5. 仍无法连接时，联系二线检查网关会话数（上限 2000）。
+            <div class="cite">
+              <div class="c"><span class="idx">1</span><div class="txt"><b>企业VPN配置指引SOP · 常用排障</b><p>连接超时 — 检查本机网络是否正常；尝试 Web 门户模式验证网关可达性…</p></div></div>
+              <div class="c"><span class="idx">2</span><div class="txt"><b>网络故障排查SOP · 故障定界五步法</b><p>单点故障先查终端，终端正常则测网关：ping 网关 IP，通 → 排查上联…</p></div></div>
+            </div>
+            <span class="ref">引用：企业VPN配置指引SOP、网络故障排查SOP</span>
+          </div>
+        </div>
+
+        <div class="user"><div class="avatar bot">AI</div>
+          <div class="card a" style="flex:1;">
+            固件升级失败按现象分类处理：
+            <br><br>· 升级后无法登录 Web 界面：等待 5 分钟重试，仍失败则断电后按住 RESET 键 10 秒再上电；
+            <br>· 版本号未变化：检查固件包完整性（MD5 校验）后重新上传；
+            <br>· 反复重启（boot loop）：进入恢复模式刷入官方救砖固件，并联系硬件产品部支持。
+            <div class="cite">
+              <div class="c"><span class="idx">1</span><div class="txt"><b>YF-GW2000固件远程升级技术说明 · 升级失败处理</b><p>升级后无法登录 Web 界面：等待 5 分钟后重试；仍失败则执行恢复模式…</p></div></div>
+            </div>
+            <span class="ref">引用：YF-GW2000固件远程升级技术说明</span>
+          </div>
+        </div>
+
+        <div class="user"><div class="avatar">员</div><div class="card q" style="flex:1;">今天天气怎么样？</div></div>
+
+        <div class="user"><div class="avatar bot">AI</div>
+          <div class="card a" style="flex:1;background:#FAFAFA;">
+            抱歉，企业知识库中暂未检索到与您问题相关的资料。为避免给出不准确的信息，建议您联系 IT 服务台（4008 转 100）或提交服务工单，由人工为您处理。
+            <br><br>您可以尝试更明确的问题，例如「VPN 账号如何申请？」或「邮箱发不出邮件怎么办？」。
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="input">
+      <div class="ibox"><span class="ph">输入您的问题，例如：电脑蓝屏了怎么处理？</span><button class="send">发送</button></div>
+      <div class="meta">回答基于企业知识库内容生成，并附引用来源 · 知识库版本 2026-09</div>
+    </div>
+  </main>
+</body>
+</html>

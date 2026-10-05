@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enterprise AI Knowledge Assistant - 知识库管理示意</title>
+<style>
+  :root{
+    --bg:#F2F3F5; --card:#FFFFFF; --line:#E3E5E8; --text:#1D2129; --text2:#4E5969;
+    --text3:#86909C; --accent:#F04438; --green:#00A870; --blue:#3370FF;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:"Segoe UI","Microsoft YaHei",system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden;padding:24px;}
+  .page{max-width:1080px;margin:0 auto;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;height:calc(100vh - 48px);display:flex;flex-direction:column;}
+  .top{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid var(--line);}
+  .top h1{font-size:16px;}
+  .top .sub{font-size:12px;color:var(--text3);}
+  .top .actions{margin-left:auto;display:flex;gap:10px;}
+  .btn{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:13px;}
+  .btn.ghost{background:#fff;border:1px solid var(--line);color:var(--text2);}
+  .stats{display:flex;gap:12px;padding:16px 20px;border-bottom:1px solid var(--line);}
+  .stat{flex:1;border:1px solid var(--line);border-radius:10px;padding:12px 14px;}
+  .stat b{font-size:22px;display:block;}
+  .stat span{font-size:12px;color:var(--text3);}
+  table{width:100%;border-collapse:collapse;}
+  th{background:#FAFAFA;font-size:12px;color:var(--text3);text-align:left;padding:10px 20px;border-bottom:1px solid var(--line);font-weight:600;}
+  td{font-size:13px;padding:13px 20px;border-bottom:1px solid var(--line);}
+  .tag{display:inline-block;border-radius:5px;padding:2px 8px;font-size:12px;}
+  .tag.g{background:#E8F7F0;color:var(--green);}
+  .tag.o{background:#FFF4EC;color:#FF7D00;}
+  .tag.b{background:#EAF2FF;color:var(--blue);}
+  .tag.p{background:#F5F0FF;color:#722ED1;}
+  .tag.y{background:#FFFBE6;color:#D46B08;}
+  .idx{color:var(--text3);}
+  .docs{color:var(--text2);}
+  .status{color:var(--green);font-size:12px;}
+  .status::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--green);margin-right:6px;}
+</style>
+</head>
+<body>
+  <div class="page">
+    <div class="top">
+      <h1>知识库管理</h1><span class="sub">Enterprise AI Knowledge Assistant · 5 个数据集 · 12 篇文档</span>
+      <div class="actions"><button class="btn ghost">批量管理</button><button class="btn">+ 创建知识库</button></div>
+    </div>
+    <div class="stats">
+      <div class="stat"><b>5</b><span>数据集</span></div>
+      <div class="stat"><b>12</b><span>文档总数</span></div>
+      <div class="stat"><b>100%</b><span>索引完成率</span></div>
+      <div class="stat"><b>0.5</b><span>推荐分数阈值</span></div>
+    </div>
+    <table>
+      <tr><th>名称</th><th>文档</th><th>分段数</th><th>索引状态</th><th>最近更新</th></tr>
+      <tr>
+        <td><span class="tag b">产品说明书</span></td><td class="docs">YF-Suite 产品说明书<br>YF-GW2000 产品说明书</td><td>86</td><td><span class="status">已完成</span></td><td>2026-09-15</td>
+      </tr>
+      <tr>
+        <td><span class="tag b">技术文档</span></td><td class="docs">OpenAPI 集成指南<br>固件远程升级技术说明</td><td>54</td><td><span class="status">已完成</span></td><td>2026-09-02</td>
+      </tr>
+      <tr>
+        <td><span class="tag o">IT 运维 SOP</span></td><td class="docs">Windows 故障 / 网络故障 / VPN 配置 / 邮箱问题</td><td>138</td><td><span class="status">已完成</span></td><td>2026-09-10</td>
+      </tr>
+      <tr>
+        <td><span class="tag g">售后流程</span></td><td class="docs">退换货维修流程<br>工单升级与 SLA 管理</td><td>48</td><td><span class="status">已完成</span></td><td>2026-09-05</td>
+      </tr>
+      <tr>
+        <td><span class="tag y">FAQ</span></td><td class="docs">YF-Suite FAQ<br>YF-GW2000 FAQ</td><td>42</td><td><span class="status">已完成</span></td><td>2026-09-12</td>
+      </tr>
+    </table>
+  </div>
+</body>
+</html>
