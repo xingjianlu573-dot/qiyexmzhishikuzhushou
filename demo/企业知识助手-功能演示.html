@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enterprise AI Knowledge Assistant - 在线功能演示</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23F04438'/%3E%3Ctext x='16' y='22' font-family='Arial' font-size='16' font-weight='700' fill='%23fff' text-anchor='middle'%3EYF%3C/text%3E%3C/svg%3E">
+<style>
+  :root{
+    --bg:#F2F3F5; --card:#FFFFFF; --line:#E3E5E8; --ink:#0E1B2C; --text:#1D2129;
+    --text2:#4E5969; --text3:#86909C; --accent:#F04438; --accent-soft:#FFF1F0;
+    --green:#00A870; --green-soft:#E8F7F0; --blue:#3370FF;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{font-family:"Segoe UI","Microsoft YaHei",system-ui,-apple-system,sans-serif;color:var(--text);background:var(--bg);height:100vh;display:flex;flex-direction:column;overflow:hidden;}
+  a{color:inherit;text-decoration:none;}
+  /* ===== 顶部栏 ===== */
+  .top{height:54px;background:var(--ink);color:#fff;display:flex;align-items:center;gap:12px;padding:0 18px;flex-shrink:0;}
+  .brand{display:flex;align-items:center;gap:9px;font-weight:700;font-size:14px;}
+  .brand .m{width:26px;height:26px;border-radius:6px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;}
+  .brand small{font-weight:400;color:#B9C2CF;font-size:12px;margin-left:2px;}
+  .tabs{display:flex;gap:4px;margin-left:26px;background:rgba(255,255,255,.08);border-radius:8px;padding:3px;}
+  .tabs a{font-size:13px;padding:6px 14px;border-radius:6px;color:#C8D0DA;}
+  .tabs a.on{background:rgba(255,255,255,.16);color:#fff;}
+  .badge{margin-left:auto;font-size:12px;border:1px solid rgba(255,156,146,.45);color:#FF9C92;border-radius:14px;padding:4px 12px;}
+  /* ===== 主体 ===== */
+  main{flex:1;display:flex;min-height:0;}
+  /* 左侧栏 */
+  .side{width:236px;background:var(--card);border-right:1px solid var(--line);display:flex;flex-direction:column;flex-shrink:0;}
+  .newchat{margin:14px 12px 10px;background:var(--accent);color:#fff;border:none;border-radius:8px;padding:10px 0;font-size:13px;font-weight:600;cursor:pointer;}
+  .side h6{padding:10px 16px 6px;font-size:11px;color:var(--text3);font-weight:600;}
+  .conv{list-style:none;overflow:auto;flex:1;padding:0 8px;}
+  .conv li{padding:8px 10px;border-radius:8px;font-size:13px;color:var(--text2);cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px;}
+  .conv li.on{background:var(--bg);color:var(--text);font-weight:600;}
+  .conv li.del{color:var(--text3);font-size:12px;text-align:center;cursor:pointer;}
+  .kb{flex-shrink:0;border-top:1px solid var(--line);padding:12px 14px;}
+  .kb .t{font-size:12px;color:var(--text3);margin-bottom:8px;display:flex;justify-content:space-between;}
+  .kb .row{display:flex;justify-content:space-between;font-size:12px;color:var(--text2);padding:3px 0;cursor:pointer;}
+  .kb .row:hover{color:var(--accent);}
+  .kb .row .n{color:var(--green);font-weight:700;}
+  /* 聊天区 */
+  .chat{flex:1;display:flex;flex-direction:column;min-width:0;}
+  .chathead{height:44px;display:flex;align-items:center;gap:8px;padding:0 22px;border-bottom:1px solid var(--line);background:var(--card);flex-shrink:0;}
+  .chathead .dot{width:8px;height:8px;border-radius:50%;background:var(--green);}
+  .chathead b{font-size:13.5px;}
+  .chathead span{font-size:12px;color:var(--text3);}
+  .msgbox{flex:1;overflow:auto;padding:20px 0 8px;}
+  .wrap{max-width:780px;margin:0 auto;padding:0 24px;}
+  .greet{text-align:center;padding:8px 0 4px;}
+  .greet h1{font-size:20px;color:var(--ink);}
+  .greet p{font-size:13px;color:var(--text3);margin-top:6px;line-height:1.7;}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:14px;}
+  .chips span{background:var(--card);border:1px solid var(--line);border-radius:16px;font-size:12.5px;color:var(--text2);padding:7px 14px;cursor:pointer;}
+  .chips span:hover{border-color:var(--accent);color:var(--accent);}
+  .turn{display:flex;gap:10px;align-items:flex-start;margin:14px 0;}
+  .av{width:30px;height:30px;border-radius:8px;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+  .av.u{background:var(--blue);}
+  .av.a{background:var(--accent);}
+  .bub{flex:1;min-width:0;}
+  .q{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 16px;font-size:14px;line-height:1.7;}
+  .a{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px 16px;font-size:14px;line-height:1.75;}
+  .route{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;border-radius:6px;padding:3px 10px;margin-bottom:10px;font-weight:600;}
+  .route.hit{background:var(--green-soft);color:var(--green);}
+  .route.miss{background:var(--accent-soft);color:var(--accent);}
+  .route .st{width:6px;height:6px;border-radius:50%;background:currentColor;}
+  .cites{margin-top:12px;border-top:1px dashed var(--line);padding-top:10px;}
+  .cite{display:flex;gap:10px;align-items:flex-start;background:var(--accent-soft);border:1px solid #FFD8D5;border-radius:10px;padding:9px 12px;margin-top:8px;}
+  .cite .idx{background:var(--accent);color:#fff;border-radius:6px;font-size:11.5px;padding:2px 7px;flex-shrink:0;margin-top:1px;}
+  .cite .txt b{font-size:13px;color:var(--text);display:block;margin-bottom:2px;}
+  .cite .txt p{font-size:12px;color:var(--text2);line-height:1.55;}
+  .cite .txt .sc{font-size:11px;color:var(--text3);margin-left:6px;}
+  .nohit{color:var(--text2);font-size:14px;}
+  .nohit b{color:var(--ink);}
+  /* 输入 */
+  .input{flex-shrink:0;padding:8px 24px 16px;}
+  .ibox{max-width:780px;margin:0 auto;background:var(--card);border:1px solid #C9CDD4;border-radius:12px;padding:9px 12px 9px 16px;display:flex;align-items:center;gap:10px;}
+  .ibox input{flex:1;border:none;outline:none;font-size:14px;font-family:inherit;color:var(--text);background:transparent;}
+  .ibox input::placeholder{color:var(--text3);}
+  .ibox button{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:13px;cursor:pointer;font-weight:600;}
+  .meta{max-width:780px;margin:8px auto 0;font-size:11px;color:var(--text3);text-align:center;}
+  /* ===== 知识库视图 ===== */
+  .page{flex:1;overflow:auto;}
+  .pwrap{max-width:960px;margin:0 auto;padding:34px 24px;}
+  .pwrap h2{font-size:24px;color:var(--ink);}
+  .pwrap .sub{font-size:13.5px;color:var(--text2);margin:6px 0 26px;}
+  .cats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+  .cat{border:1px solid var(--line);border-radius:12px;padding:18px;background:var(--card);cursor:pointer;}
+  .cat:hover{border-color:var(--accent);}
+  .cat b{font-size:14.5px;color:var(--ink);}
+  .cat .cnt{font-size:12px;color:var(--text3);margin:4px 0 12px;}
+  .cat ul{list-style:none;}
+  .cat li{font-size:12.5px;color:var(--text2);padding:4px 0;border-top:1px dashed var(--line);}
+  .doc{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin-bottom:16px;}
+  .doc h3{font-size:16px;color:var(--ink);margin-bottom:10px;}
+  .doc .cat-tag{font-size:11.5px;color:var(--accent);border:1px solid #FFD9D5;border-radius:5px;padding:1px 8px;margin-left:8px;vertical-align:2px;background:var(--accent-soft);}
+  .doc pre{white-space:pre-wrap;font-family:inherit;font-size:13px;color:var(--text2);line-height:1.8;}
+  .back{display:inline-block;font-size:13px;color:var(--blue);cursor:pointer;margin-bottom:14px;}
+  /* ===== 工作流视图 ===== */
+  .flowline{display:flex;align-items:stretch;gap:8px;flex-wrap:wrap;margin:18px 0 26px;}
+  .fnode{flex:1;min-width:150px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;position:relative;}
+  .fnode .fi{width:26px;height:26px;border-radius:7px;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;margin-bottom:8px;}
+  .fnode b{font-size:13.5px;color:var(--ink);display:block;margin-bottom:4px;}
+  .fnode p{font-size:12px;color:var(--text2);line-height:1.55;}
+  .farrow{align-self:center;color:#C9CDD4;font-size:16px;}
+  .note{border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:8px;background:var(--card);padding:14px 18px;font-size:13px;color:var(--text2);line-height:1.8;}
+  .note b{color:var(--ink);}
+  @media (max-width:860px){
+    .side{display:none;}
+    .cats{grid-template-columns:1fr;}
+    .flowline{flex-direction:column;}
+    .farrow{transform:rotate(90deg);}
+    .greet h1{font-size:17px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="brand"><span class="m">YF</span>Enterprise AI Knowledge Assistant <small>· 在线功能演示</small></div>
+  <div class="tabs">
+    <a href="#chat" id="tab-chat" class="on">对话演示</a>
+    <a href="#kb" id="tab-kb">知识库</a>
+    <a href="#flow" id="tab-flow">工作流</a>
+  </div>
+  <span class="badge">演示模式 · 本地检索 · 无需联网</span>
+</div>
+
+<main>
+  <!-- ===== 对话视图 ===== -->
+  <section class="side" id="view-chat-side">
+    <button class="newchat" onclick="newChat()">+ 新建对话</button>
+    <h6>对话历史</h6>
+    <ul class="conv" id="convList"></ul>
+    <div class="kb">
+      <div class="t"><span>知识库（5 数据集）</span><span style="cursor:pointer;color:var(--blue);" onclick="goto('kb')">浏览 »</span></div>
+      <div id="kbStats"></div>
+    </div>
+  </section>
+
+  <section class="chat" id="view-chat">
+    <div class="chathead"><span class="dot"></span><b>Enterprise AI Knowledge Assistant</b><span>· 内部知识助手 · 回答均附引用来源</span></div>
+    <div class="msgbox"><div class="wrap" id="msgs"></div></div>
+    <div class="input">
+      <div class="ibox"><input id="q" placeholder="输入您的问题，例如：电脑蓝屏了怎么处理？" onkeydown="if(event.key==='Enter')ask()"><button onclick="ask()">发送</button></div>
+      <div class="meta">回答由前端真实检索生成：命中知识库 → 回答 + 引用来源；未命中 → 兜底转人工 · 知识库版本 2026-09</div>
+    </div>
+  </section>
+
+  <!-- ===== 知识库视图 ===== -->
+  <section class="page" id="view-kb" style="display:none;">
+    <div class="pwrap" id="kbPage"></div>
+  </section>
+
+  <!-- ===== 工作流视图 ===== -->
+  <section class="page" id="view-flow" style="display:none;">
+    <div class="pwrap">
+      <h2>工作流：自动处理问题</h2>
+      <p class="sub">与线上应用一致的 DSL 路由逻辑（start → knowledge-retrieval → if-else → LLM / 兜底），本演示站在前端真实执行检索与路由。</p>
+      <div class="flowline">
+        <div class="fnode"><div class="fi" style="background:var(--blue);">S</div><b>开始</b><p>接收用户问题（sys.query）</p></div>
+        <div class="farrow">→</div>
+        <div class="fnode"><div class="fi" style="background:#FF7D00;">K</div><b>知识库检索</b><p>12 篇文档分段检索 · top_k=3 · 分数阈值</p></div>
+        <div class="farrow">→</div>
+        <div class="fnode"><div class="fi" style="background:#722ED1;">I</div><b>命中判断</b><p>if-else：最高相关度 ≥ 阈值？</p></div>
+        <div class="farrow">→</div>
+        <div class="fnode"><div class="fi" style="background:var(--green);">A</div><b>回答 + 引用</b><p>基于知识库片段回答，标注引用来源</p></div>
+      </div>
+      <div class="flowline">
+        <div class="fnode"><div class="fi" style="background:var(--accent);">F</div><b>兜底转人工</b><p>未命中：不硬答，引导联系 IT 服务台 / 提交工单</p></div>
+      </div>
+      <div class="note">
+        <b>防幻觉三层机制：</b>① 检索侧 — 分数阈值过滤低相关片段（本演示阈值 0.30）；② 提示词侧 — 仅依据检索上下文回答；③ 路由侧 — 无依据不硬答，走兜底转人工。您可以回到对话页提问「今天天气怎么样？」观察兜底路径。
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+"use strict";
+/* ===== 知识库数据（来自 seed/knowledge-base，12 篇）===== */
+const KB = [
+ {
+  "title": "YF-GW2000 智能网关 产品说明书",
+  "category": "产品说明书",
+  "content": "产品型号：YF-GW2000  \n文档编号：PM-YF-002  \n维护部门：硬件产品部  \n最后更新：2026-08-30\n\n## 1. 产品概述\n\nYF-GW2000 是云帆科技推出的边缘智能网关，用于企业内部网络的统一接入与数据采集，支持 Modbus / BACnet / MQTT / OPC UA 等主流工业与楼宇协议，可作为物联网平台与现场设备之间的数据中转节点。\n\n## 2. 硬件规格\n\n| 项目 | 规格 |\n| --- | --- |\n| CPU | 四核 Cortex-A55，1.8GHz |\n| 内存 | 2GB DDR4 |\n| 存储 | 16GB eMMC + MicroSD 扩展 |\n| 网络 | 双千兆以太网口（WAN / LAN）+ 4G 模块（可选） |\n| 串口 | 2× RS485，1× RS232 |\n| 供电 | DC 9-36V 宽压输入 |\n| 工作温度 | -20℃ ~ 70℃ |\n| 外壳 | 金属工业外壳，导轨式安装 |\n\n## 3. 功能特性\n\n- 协议解析：内置 Modbus RTU/TCP、BACnet IP、MQTT 3.1.1、OPC UA 客户端。\n- 边缘计算：支持节点规则引擎，可在本地完成数据过滤、阈值告警与联动控制。\n- 远程运维：支持 Web 管理界面、SSH、OTA 固件远程升级。\n- 数据上云：通过 MQTT over TLS 连接云帆 IoT 平台，支持断点续传。\n\n## 4. 快速使用步骤\n\n1. 使用随机附带的电源适配器为设备供电（DC 12V）。\n2. 将 WAN 口接入公司内网，等待约 30 秒自动获取 IP。\n3. 在浏览器输入 `https://gw2000.local` 访问管理界面，默认用户名 `admin`，初始密码见设备铭牌二维码。\n4. 登录后进入\"协议配置\"添加现场设备，选择协议类型并填写从站地址。\n5. 在\"数据上云\"中填入 IoT 平台连接信息，点击\"应用\"后设备开始上报数据。\n\n## 5. 安全注意事项\n\n- 首次登录后必须修改默认密码，并建议关闭 SSH 的密码登录。\n- 设备仅开放管理端口 443 与数据端口 8883，请勿暴露到公网。\n- 固件升级过程中禁止断电，否则可能损坏系统分区。"
+ },
+ {
+  "title": "YF-Suite 企业协同平台 产品说明书",
+  "category": "产品说明书",
+  "content": "产品版本：v5.2.0  \n文档编号：PM-YF-001  \n维护部门：产品中心  \n最后更新：2026-09-15\n\n## 1. 产品概述\n\nYF-Suite 是云帆科技自主研发的企业级协同办公平台，面向中大型企业提供\"组织、沟通、流程、知识\"四位一体的数字化工作空间。平台采用 B/S 架构，支持私有化部署与混合云两种模式，兼容 Windows Server / Linux / 国产化操作系统。\n\n## 2. 核心功能模块\n\n### 2.1 组织与通讯录\n- 支持 LDAP / AD 域同步，组织架构自动同步，单点登录（SSO）。\n- 通讯录支持部门分组、虚拟团队与外部联系人，权限按角色隔离。\n\n### 2.2 即时通讯\n- 支持文字、图片、文件（单文件最大 200MB）与音视频会议（单会议最多 500 人）。\n- 消息已读回执、@提醒、会话归档，支持企业微信/钉钉消息联动。\n\n### 2.3 流程审批\n- 内置表单设计器与流程编排器，支持会签、或签、条件分支、子流程。\n- 审批流支持退回、转办、加签、催办，全程留痕可审计。\n\n### 2.4 知识中心\n- 文档库支持目录树、全文检索、版本管理、多人协同编辑。\n- 文档权限支持按部门 / 角色 / 个人三级授权。\n\n### 2.5 日程与待办\n- 个人日程、团队日历、会议室预定；支持 Outlook 日历双向同步。\n\n## 3. 技术规格\n\n| 项目 | 规格 |\n| --- | --- |\n| 服务端 | Linux x86_64 / arm64，Windows Server 2019+ |\n| 数据库 | PostgreSQL 14+ / MySQL 8.0+ |\n| 中间件 | Redis 6+ |\n| 客户端 | Chrome 90+ / Edge / Safari 14+ / 企业微信内嵌浏览器 |\n| 并发能力 | 单集群 10,000 在线用户（标准配置） |\n\n## 4. 许可与支持\n\n- 商业版按年度订阅，包含 7×24 技术支持与每季度一次升级服务。\n- 标准版免费提供社区支持，升级周期为每半年一次。\n\n## 5. 常见限制\n\n- 单会话文件上传上限 200MB，超出请使用平台网盘。\n- 音视频会议单场最长 4 小时，超时需重新发起。\n- 移动端暂不支持离线审批与离线编辑。"
+ },
+ {
+  "title": "YF-GW2000 固件远程升级 技术说明",
+  "category": "技术文档",
+  "content": "文档编号：TD-YF-011  \n维护部门：硬件产品部  \n最后更新：2026-08-15\n\n## 1. 升级机制\n\nYF-GW2000 支持两种固件升级方式：\n1. 本地升级：通过 Web 管理界面\"系统 → 固件升级\"上传 `.bin` 固件包。\n2. OTA 远程升级：设备定时（默认每天 03:00）向云帆 OTA 服务器轮询版本，发现新版本后自动下载并升级。\n\n## 2. 升级前置条件\n\n- 设备当前固件版本与目标版本之间的差异不超过两个大版本（否则需先升级中间版本）。\n- 升级期间禁止断电、禁止断网（OTA 模式）；本地升级建议使用有线连接。\n- 升级前建议导出设备配置备份（\"系统 → 配置备份\"）。\n\n## 3. 升级流程\n\n1. 检查当前版本：管理界面首页右上角显示固件版本号，格式如 `GW2000-v2.4.1`。\n2. 下载目标版本固件包（本地升级），或确认 OTA 通道可用。\n3. 执行升级，设备自动重启，重启后等待约 90 秒完成系统初始化。\n4. 登录管理界面确认版本号，并检查\"系统日志\"中无异常报错。\n\n## 4. 升级失败处理\n\n| 现象 | 处理方式 |\n| --- | --- |\n| 升级后无法登录 Web 界面 | 等待 5 分钟后重试；仍失败则执行恢复模式：断电后按住 RESET 键 10 秒再上电 |\n| 版本号未变化 | 检查固件包完整性（MD5 校验），重新上传 |\n| 升级后业务数据丢失 | 立即导入升级前的配置备份 |\n| 反复重启（boot loop） | 进入恢复模式刷入官方救砖固件，联系硬件产品部支持 |\n\n## 5. 版本兼容性\n\n- 协议插件（Modbus / BACnet / MQTT）随固件整体发布，不支持单独回退。\n- 从 v2.x 升级到 v3.x 后，规则引擎配置自动迁移，无需重新配置。"
+ },
+ {
+  "title": "YF-Suite OpenAPI 集成指南",
+  "category": "技术文档",
+  "content": "文档编号：TD-YF-010  \n维护部门：技术架构部  \n最后更新：2026-09-02\n\n## 1. 概述\n\nYF-Suite 提供完整的 RESTful OpenAPI，供第三方系统与企业内部应用集成。所有接口基于 HTTPS，数据格式为 JSON，认证采用 OAuth 2.0（Client Credentials）。\n\n## 2. 认证方式\n\n1. 管理员在\"开放平台\"中创建应用，获取 `client_id` 与 `client_secret`。\n2. 调用令牌接口获取 access_token：\n\n```\nPOST https://{host}/openapi/v1/token\nContent-Type: application/json\n\n{\n  \"client_id\": \"your_client_id\",\n  \"client_secret\": \"your_client_secret\",\n  \"grant_type\": \"client_credentials\"\n}\n```\n\n3. access_token 有效期 2 小时，请在有效期前 10 分钟刷新；所有业务接口请求头携带 `Authorization: Bearer {access_token}`。\n\n## 3. 常用接口\n\n### 3.1 获取组织架构\n`GET /openapi/v1/org/tree?with_member=true`  \n返回组织树及成员列表，用于外部系统同步通讯录。\n\n### 3.2 发送消息\n`POST /openapi/v1/message/send`  \n请求体：`{\"to_type\": \"user|department|group\", \"to_ids\": [\"u001\"], \"content\": \"...\"}`  \n支持 24 小时内撤回（`POST /openapi/v1/message/recall`）。\n\n### 3.3 发起审批\n`POST /openapi/v1/approval/create`  \n请求体包含表单数据与流程标识，创建成功后返回 `approval_no`。\n\n### 3.4 查询知识文档\n`GET /openapi/v1/knowledge/docs?keyword={kw}&page=1&page_size=20`  \n仅返回当前账号有阅读权限的文档。\n\n## 4. 错误码约定\n\n| 错误码 | 说明 |\n| --- | --- |\n| 401 | token 无效或过期 |\n| 403 | 无接口权限或数据权限 |\n| 429 | 调用频率超限（默认 100 次/分钟） |\n| 500 | 服务内部错误 |\n\n## 5. 沙箱与联调\n\n- 提供 `https://sandbox.yfcloud.cn` 沙箱环境，数据与生产隔离。\n- 联调账号请联系技术架构部申请，沙箱内每日限流 10,000 次。\n\n## 6. 调用规范\n\n- 幂等：写操作请携带 `Idempotency-Key` 请求头，重复提交不会产生重复数据。\n- 限流：单应用默认 100 次/分钟，突发流量请提前申请配额。\n- 日志：平台记录全部调用审计日志，保留 180 天。"
+ },
+ {
+  "title": "IT 运维 SOP：Windows 客户端故障处理",
+  "category": "IT 运维 SOP",
+  "content": "文档编号：SOP-IT-101  \n适用范围：IT 支持一线 / 二线工程师  \n最后更新：2026-09-10\n\n## 1. 目标\n\n统一 Windows 客户端常见故障的处理路径，保证故障在 30 分钟内完成初步定位，常见问题首解率 ≥ 80%。\n\n## 2. 通用处理流程\n\n1. 记录工单：员工姓名、工号、设备资产编号、操作系统版本、故障现象描述。\n2. 远程连接（需员工授权），优先使用企业远程协助工具。\n3. 按下方分类执行排查，每次操作后让员工验证。\n4. 无法解决时升级二线，并保留完整排查日志。\n\n## 3. Windows 蓝屏（BSOD）处理\n\n1. 记录蓝屏代码（如 `IRQL_NOT_LESS_OR_EQUAL`、`MEMORY_MANAGEMENT`、`SYSTEM_SERVICE_EXCEPTION`）。\n2. 查看 `C:\\Windows\\Minidump` 目录下的 dump 文件，使用 WinDbg 分析故障模块。\n3. 常见根因与处置：\n   - 内存故障（`MEMORY_MANAGEMENT`）：运行 Windows 内存诊断，更换内存条。\n   - 驱动冲突（`SYSTEM_THREAD_EXCEPTION_NOT_HANDLED`）：进入安全模式，回滚最近安装的驱动。\n   - 磁盘故障（`KERNEL_DATA_INPAGE_ERROR`）：检查磁盘 SMART 信息（`wmic diskdrive get status`），备份数据后更换硬盘。\n4. 修复后建议执行 `sfc /scannow` 与 `DISM /Online /Cleanup-Image /RestoreHealth`。\n\n## 4. 系统卡顿与开机慢\n\n1. 查看任务管理器：CPU / 内存 / 磁盘占用 Top 进程。\n2. 关闭自启动项：`任务管理器 → 启动`，禁用非必要程序。\n3. 磁盘占用 > 95% 时清理临时文件（`cleanmgr`）与用户缓存。\n4. 检查系统更新状态，补丁缺失可能导致后台高占用。\n\n## 5. 打印机与外部设备故障\n\n1. 确认设备电源、数据线连接正常。\n2. 打印队列卡死：停止 `Print Spooler` 服务，删除 `C:\\Windows\\System32\\spool\\PRINTERS` 下文件，重启服务。\n3. 驱动异常：卸载后从公司软件中心重新安装对应型号驱动。\n4. 共享打印机无法连接：检查共享主机防火墙是否放行 445 端口，重新添加打印机。\n\n## 6. 账号登录与域问题\n\n1. 密码错误：指导员工通过公司 SSO 自助重置。\n2. 提示\"工作站与主域间的信任关系失败\"：IT 在 AD 中重置该计算机账户，重新加域。\n3. 登录后桌面异常：检查漫游配置文件大小，必要时重建用户配置文件。\n\n## 7. 升级与转派标准\n\n- 一线处理时长超过 30 分钟仍未定位 → 升级二线。\n- 涉及硬件更换、域架构变更、批量故障 → 直接转派对应二线团队。\n- 所有处置必须记录到 IT 服务管理平台，附解决步骤与耗时。"
+ },
+ {
+  "title": "IT 运维 SOP：企业 VPN 配置指引",
+  "category": "IT 运维 SOP",
+  "content": "文档编号：SOP-IT-103\n适用范围：IT 支持一线 / 全体员工\n最后更新：2026-09-10\n\n## 1. 目标\n\n规范企业远程接入 VPN（SSL VPN）的申请、配置与排障流程，保障远程办公接入安全。\n\n## 2. VPN 接入方式\n\n企业统一使用 SSL VPN 网关（型号 YF-VPN-5000），支持两种接入方式：\n- 客户端模式（推荐）：安装 YF-SecureClient 客户端，适用于 Windows / macOS。\n- Web 门户模式：浏览器访问 https://vpn.yfcloud.cn 零安装接入，适用于临时设备。\n\n## 3. 首次配置步骤\n\n1. 在 IT 服务管理平台提交 VPN 开通申请，审批通过后获得个人账号。\n2. 从公司软件中心下载 YF-SecureClient 并安装。\n3. 打开客户端，服务器地址填写 vpn.yfcloud.cn，端口 443。\n4. 输入工号与 VPN 密码（初始密码为身份证后 6 位，首次登录强制修改）。\n5. 连接成功后，任务栏图标显示绿色，可访问内网资源（10.0.0.0/8、172.16.0.0/12）。\n\n## 4. 常用排障\n\n| 现象 | 处置 |\n| --- | --- |\n| 提示证书不受信任 | 确认连接地址为 vpn.yfcloud.cn，导出企业根证书并导入本机受信任根目录 |\n| 连接超时 | 检查本机网络是否正常；尝试 Web 门户模式验证网关可达性 |\n| 登录后无法访问内网 | 检查是否选择正确分组；确认虚拟网卡已获取 10.x 地址 |\n| 频繁掉线 | 检查网络波动；关闭本机代理软件；联系二线检查网关会话数（上限 2000） |\n| 忘记密码 | 通过公司 SSO 自助重置，或联系 IT 服务台 |\n\n## 5. 安全规范\n\n- 严禁将个人 VPN 账号共享给他人，账号与设备绑定（首次登录自动绑定 MAC）。\n- 办公设备必须安装 EDR 并开启系统防火墙后方可接入。\n- VPN 仅用于访问企业内部资源，禁止通过 VPN 进行大流量下载（单日流量上限 5GB）。\n- 离职员工账号在离职流程中自动停用。\n\n## 6. 应急联系\n\n- 工作时间：IT 服务台 4008 转 100（一线）。\n- 非工作时间：值班二线热线，仅处理全员无法接入级别的故障。"
+ },
+ {
+  "title": "IT 运维 SOP：企业邮箱故障处理",
+  "category": "IT 运维 SOP",
+  "content": "文档编号：SOP-IT-104\n适用范围：IT 支持一线 / 邮件二线\n最后更新：2026-09-10\n\n## 1. 目标\n\n统一处理企业邮箱（YF-Mail）收发异常、登录问题与安全事件，保障邮件服务可用性，常见问题首解率 ≥ 85%。\n\n## 2. 客户端配置标准\n\n- 服务器类型：IMAP（推荐）或 POP3。\n- 收件服务器：mail.yfcloud.cn，端口 993（IMAP SSL）/ 995（POP3 SSL）。\n- 发件服务器：mail.yfcloud.cn，端口 465（SMTP SSL）。\n- 认证方式：完整邮箱地址 + 应用专用密码（客户端不支持明文登录密码）。\n\n## 3. 常见故障与处置\n\n### 3.1 无法登录 / 密码错误\n- 确认使用邮箱完整地址登录（例：zhangsan@yfcloud.cn）。\n- 引导员工通过公司 SSO 自助重置密码，重置后需重新生成应用专用密码。\n- 多次尝试被锁定时，等待 30 分钟自动解锁，或由二线后台解锁。\n\n### 3.2 收不到邮件\n- 检查是否误入垃圾邮件文件夹，白名单添加企业发件域。\n- 查看邮件规则 / 转发设置是否异常（可能是账号被盗的征兆）。\n- 服务器侧检查队列与退信（`mailq` 查看滞留队列），退信附退信原因为准。\n\n### 3.3 发不出邮件\n- 检查发件服务器端口 465 是否可达，本机代理是否拦截。\n- 查看退信内容：\n  - `550 5.1.1 user unknown`：收件人地址不存在。\n  - `554 5.7.1 relaying denied`：认证失败，重新配置客户端。\n  - `421 4.7.0 try again later`：发信频率超限，单账号默认 500 封/天。\n- 群发前请使用平台的群发助手，避免触发反垃圾策略。\n\n### 3.4 邮件延迟\n- 大附件（> 20MB）建议使用企业网盘分享链接替代。\n- 检查收件方网关与反垃圾策略；跨国邮件可能存在分钟级延迟，属正常。\n\n## 4. 安全事件处置\n\n- 疑似账号被盗（异地登录 / 群发垃圾邮件）：立即强制下线并重置密码，检查转发规则，必要时启用二次验证。\n- 钓鱼邮件：员工举报至安全邮箱，安全组分析样本并全网通告。\n- 邮件误发：立即联系收件方管理员请求撤回，并上报合规部门评估影响。\n\n## 5. 记录要求\n\n- 所有邮箱故障在 IT 服务管理平台建单处理，记录故障类型、处置动作与耗时。\n- 涉及账号安全事件必须当天上报信息安全组。"
+ },
+ {
+  "title": "IT 运维 SOP：网络故障排查",
+  "category": "IT 运维 SOP",
+  "content": "文档编号：SOP-IT-102  \n适用范围：IT 支持一线 / 网络二线  \n最后更新：2026-09-10\n\n## 1. 目标\n\n对\"无法上网 / 网络慢 / 局部断网\"三类典型网络故障，按标准路径在 15 分钟内完成定界（终端 / 接入层 / 核心 / 出口）。\n\n## 2. 故障定界五步法\n\n1. 确认影响范围：单人 / 单部门 / 整栋楼 / 全公司。\n2. 单点故障先查终端：网线、Wi-Fi 信号、`ipconfig /all` 是否获取到正确 IP。\n3. 终端正常则测网关：`ping 网关 IP`，通 → 排查上联；不通 → 检查接入交换机端口。\n4. 网关通则测 DNS：`nslookup www.yfcloud.cn`，解析失败检查 DNS 服务器与转发。\n5. 外部不通则测出口：`ping 114.114.114.114`，不通检查出口防火墙与运营商链路。\n\n## 3. 常见问题与处置\n\n### 3.1 获取不到 IP（DHCP 故障）\n- 检查 DHCP 服务器负载与地址池余量（`dhcp pool exhaustion` 是常见原因）。\n- 查看交换机端口是否启用 DHCP Snooping，误判可能导致地址请求被丢弃。\n- 临时方案：静态配置可用 IP 并登记，待 DHCP 恢复后改回自动获取。\n\n### 3.2 网速慢\n- 带宽测试区分内网 / 出口：内网互传文件测速，慢则查交换机拥塞、环路（STP 收敛）。\n- 出口慢：查看出口防火墙会话数与带宽利用率，识别 P2P / 视频大流量占用。\n- 无线慢：检查 AP 信道干扰、接入用户数（单 AP 建议 ≤ 50 终端）。\n\n### 3.3 局部断网\n- 查看接入交换机电源、端口 err-disable（`show interface status`）。\n- 环路排查：关闭端口后观察是否恢复，定位环路源端口。\n- 配置漂移：对比交换机基线配置，回滚异常变更。\n\n### 3.4 DNS 解析异常\n- 内网域名解析失败：检查内部 DNS 权威区域与转发器。\n- 部分网站打不开：测试公共 DNS（8.8.8.8 / 223.5.5.5）对比。\n- 中毒 / 劫持风险：检查 hosts 文件与企业 DNS 是否被篡改。\n\n## 4. 记录与升级\n\n- 每个故障记录：时间、影响范围、定位结论、处置动作、验证结果。\n- 涉及核心交换机 / 防火墙变更必须走变更审批，二线以上执行。\n- 重大故障（影响 > 100 人或核心业务）启动应急预案并同步管理层。"
+ },
+ {
+  "title": "售后流程：产品退换货与维修",
+  "category": "售后流程",
+  "content": "文档编号：AF-YF-201\n适用范围：售后服务部 / 客服中心\n最后更新：2026-09-05\n\n## 1. 流程目标\n\n规范 YF 系列硬件产品（网关、传感器、边缘服务器）的退换货、维修与退款流程，明确各环节时限与责任人。\n\n## 2. 售后政策总览\n\n| 项目 | 政策 |\n| --- | --- |\n| 质保期 | 自签收日起 24 个月 |\n| 7 天无理由退货 | 仅限未激活、外观无损坏的整机 |\n| 15 天换货 | 非人为故障，凭检测单更换同型号 |\n| 维修时效 | 签收返修件后 7 个工作日寄出 |\n| 上门服务 | 企业客户质保期内提供免费上门检测（一线城市） |\n\n## 3. 处理流程\n\n### 3.1 客户报修\n1. 客服记录：客户名称、合同号、产品型号、SN 序列号、故障现象、联系方式。\n2. 远程初步诊断（30 分钟内）：指导客户检查电源、网线、指示灯状态。\n3. 无法远程解决 → 创建售后工单并分配工程师。\n\n### 3.2 检测与判定\n1. 工程师 24 小时内完成检测，出具检测报告。\n2. 判定结果：\n   - 质保内非人为故障 → 免费维修 / 换货。\n   - 人为损坏或过保 → 提供维修报价，客户确认后维修。\n3. 检测结果同步客服，由客服与客户确认处理方案。\n\n### 3.3 换货与维修执行\n1. 换货：仓库 48 小时内发出新机，客户寄回旧机（运费企业承担）。\n2. 维修：维修中心签收后 7 个工作日内完成并寄出，附维修工单。\n3. 无法修复且质保内 → 换机或按合同约定退款。\n\n### 3.4 退款\n- 退款原路返回，7 个工作日内到账；企业客户开具红字发票。\n\n## 4. 时限承诺与升级\n\n- 一线响应：30 分钟内。\n- 工单闭环：标准单 3 个工作日，复杂单 7 个工作日。\n- 超时未闭环 → 自动升级售后经理，并同步客户预期。\n\n## 5. 客户沟通规范\n\n- 每个环节必须主动告知客户处理进度（短信 / 邮件 / 客服回访）。\n- 维修报价需客户书面确认后方可执行，禁止未经确认产生费用。"
+ },
+ {
+  "title": "售后流程：客户工单升级与 SLA 管理",
+  "category": "售后流程",
+  "content": "文档编号：AF-YF-202\n适用范围：客服中心 / 售后二线 / 交付团队\n最后更新：2026-09-05\n\n## 1. 流程目标\n\n定义客户问题从受理、分级到解决的完整工单链路，明确各优先级 SLA 与升级触发条件。\n\n## 2. 工单优先级定义\n\n| 优先级 | 定义 | 首次响应 | 解决时限 |\n| --- | --- | --- | --- |\n| P1 紧急 | 核心业务中断 / 数据丢失 / 安全事件 | 15 分钟 | 4 小时 |\n| P2 高 | 主要功能不可用，有临时绕过方案 | 30 分钟 | 8 小时 |\n| P3 中 | 部分功能受限，不影响核心业务 | 2 小时 | 24 小时 |\n| P4 低 | 咨询 / 优化建议 | 24 小时 | 5 个工作日 |\n\n## 3. 工单流转\n\n1. 受理：客服记录客户信息与问题描述，系统自动按关键词初判优先级。\n2. 分派：按产品线 / 问题域自动分派至对应工程师队列。\n3. 处理：工程师按优先级插队处理，过程全程留痕。\n4. 解决：客服验证后关闭工单，并发送满意度问卷。\n\n## 4. 升级触发规则\n\n- P1 工单 1 小时未定位 → 升级售后经理并建立临时作战群。\n- P2 工单 4 小时未解决 → 升级二线负责人。\n- 同一客户 7 天内重复开启同类工单 ≥ 3 次 → 触发根因分析（RCA）。\n- 批量故障（≥ 5 客户同时报同一问题）→ 自动进入事件管理流程。\n\n## 5. SLA 考核\n\n- 月度 SLA 达成率 = 按时闭环工单数 / 当月总工单数，目标 ≥ 95%。\n- 工单超时自动通知：响应超时通知一线主管，解决超时通知售后经理。\n\n## 6. 知识沉淀\n\n- 每个解决完成的工单必须填写\"解决方案\"，每周由二线评审后沉淀进知识库。\n- 知识库命中率纳入一线绩效，鼓励一线优先使用知识库自助解决。"
+ },
+ {
+  "title": "YF-GW2000 智能网关 常见问题 FAQ",
+  "category": "FAQ",
+  "content": "文档编号：FAQ-YF-302\n维护部门：硬件产品部 / 客服中心\n最后更新：2026-08-25\n\n## Q1：首次使用如何登录管理界面？\n\n设备上电并接入内网约 30 秒后，浏览器访问 https://gw2000.local。默认用户名 admin，初始密码见设备铭牌二维码。首次登录必须修改默认密码。\n\n## Q2：支持哪些工业协议？\n\n内置 Modbus RTU/TCP、BACnet IP、MQTT 3.1.1、OPC UA 客户端，可通过规则引擎做本地数据过滤、阈值告警与联动控制。\n\n## Q3：如何连接云帆 IoT 平台？\n\n在管理界面\"数据上云\"中填入 IoT 平台连接信息（MQTT over TLS，端口 8883），点击\"应用\"后设备开始上报数据，支持断点续传。\n\n## Q4：设备频繁掉线是什么原因？\n\n常见原因：现场网络波动、供电不稳（请使用 DC 12V 稳定电源）、4G 信号弱。可查看\"系统日志\"中的连接日志，必要时开启看门狗自动重连。\n\n## Q5：如何进行固件升级？\n\n支持本地升级（Web 界面上传 .bin）与 OTA 远程升级（默认每天 03:00 轮询）。升级前导出配置备份，升级期间禁止断电。跨大版本升级需按版本顺序进行。\n\n## Q6：设备升级后无法登录怎么办？\n\n等待 5 分钟重试；仍失败则断电后按住 RESET 键 10 秒再上电进入恢复模式，刷入官方救砖固件并联系硬件产品部支持。\n\n## Q7：质保政策是什么？\n\n自签收日起 24 个月质保，质保内非人为故障免费维修或换货；7 天无理由退货仅限未激活整机，15 天内非人为故障可换货。企业客户质保期内一线城市提供免费上门检测。\n\n## Q8：可以同时采集多少台现场设备？\n\n标准配置单台网关支持最多 128 台 Modbus 从站或 64 台 BACnet 设备，更多设备建议部署多台网关分级接入。"
+ },
+ {
+  "title": "YF-Suite 常见问题 FAQ",
+  "category": "FAQ",
+  "content": "文档编号：FAQ-YF-301\n维护部门：客服中心\n最后更新：2026-09-12\n\n## Q1：YF-Suite 支持哪些操作系统和浏览器？\n\n服务端支持 Linux x86_64 / arm64 与 Windows Server 2019+；客户端支持 Chrome 90+、Edge、Safari 14+ 及企业微信内嵌浏览器。移动端支持 iOS 15+ 与 Android 10+。\n\n## Q2：单文件上传大小限制是多少？\n\n即时通讯单文件最大 200MB，超出请使用平台网盘（单文件上限 5GB）。音视频会议单场最长 4 小时，超时需重新发起。\n\n## Q3：如何与 AD/LDAP 集成实现单点登录？\n\n在\"系统管理 → 认证设置\"中配置 AD/LDAP 服务器地址、Base DN 与绑定账号，启用后组织架构自动同步，员工通过企业账号即可单点登录。配置完成后请测试至少一个账号再全量启用。\n\n## Q4：审批流程可以支持会签和条件分支吗？\n\n可以。表单设计器与流程编排器支持会签、或签、条件分支、子流程，也支持退回、转办、加签、催办，全程留痕可审计。\n\n## Q5：会议人数上限是多少？如何扩容？\n\n标准版单会议最多 500 人，单集群支持 10,000 在线用户。扩容需联系销售评估并发配置，扩容在维护窗口内完成。\n\n## Q6：数据安全与备份策略如何？\n\n平台支持私有化部署，数据存储在企业本地。系统每日自动全量备份数据库与文件存储，保留 30 天；恢复演练每季度执行一次。\n\n## Q7：集成第三方系统需要什么？\n\n使用 YF-Suite OpenAPI（OAuth 2.0 认证），在\"开放平台\"创建应用获取 client_id 与 client_secret。常用接口包括组织架构同步、消息发送、审批发起与知识文档查询。调用限流默认 100 次/分钟。\n\n## Q8：如何申请技术支持？\n\n商业版客户拨打 4008 转 100 或通过官网提交工单，提供合同号与问题描述，按 SLA 优先级处理（P1 首次响应 15 分钟）。"
+ }
+];
+/* ===== 分段与检索 ===== */
+function segment(doc){
+  const parts = doc.content.split(/\n\n+/);
+  const segs = [];
+  for(const p of parts){
+    const t = p.replace(/\|/g,' ').trim();
+    if(t.length >= 8) segs.push({doc:doc.title, cat:doc.category, text:t});
+  }
+  return segs;
+}
+const SEGS = [];
+const CATS = [];
+for(const d of KB){
+  for(const s of segment(d)) SEGS.push(s);
+  const c = CATS.find(x=>x.name===d.category);
+  if(c) c.n++; else CATS.push({name:d.category,n:1});
+}
+const STOP = new Set(['怎么','如何','怎样','为什么','什么','请问','吗','呢','哪里','多少','时候','可以','能否','怎么办','那个','这个','的话']);
+function grams(text){
+  const t = text.toLowerCase().replace(/[，。、；：？！,.;:?!'"“”‘’（）()\[\]{}|`*#\-]/g,' ');
+  const g = new Set();
+  const blocks = t.match(/[\u4e00-\u9fff]+|[a-z0-9_.]+/g)||[];
+  for(const m of blocks){
+    if(/[\u4e00-\u9fff]/.test(m)){
+      for(let i=0;i<m.length-1;i++) g.add(m.slice(i,i+2));
+      if(m.length===2) g.add(m);
+    } else g.add(m);
+  }
+  for(const s of Array.from(g)) if(STOP.has(s)) g.delete(s);
+  return g;
+}
+function search(query){
+  const qg = grams(query);
+  if(!qg.size) return [];
+  const scores = [];
+  for(const s of SEGS){
+    const sg = grams(s.text);
+    let hit = 0;
+    for(const g of qg) if(sg.has(g)) hit++;
+    let sc = hit / qg.size;
+    if(s.text.startsWith('##')) sc += 0.1;
+    sc = Math.min(sc, 0.95);
+    if(sc>0) scores.push({...s, score:sc});
+  }
+  scores.sort((a,b)=>b.score-a.score);
+  return scores.slice(0,3);
+}
+/* ===== 会话状态 ===== */
+let sessions = JSON.parse(localStorage.getItem('yf_sessions')||'[]');
+let cur = null;
+function persist(){ localStorage.setItem('yf_sessions', JSON.stringify(sessions)); }
+function newChat(){
+  sessions.unshift({id:Date.now(), title:'新对话', turns:[]});
+  cur = sessions[0]; persist(); renderConv(); renderMsgs();
+}
+function openChat(id){ cur = sessions.find(s=>s.id===id); renderConv(); renderMsgs(); }
+function delChat(id){
+  sessions = sessions.filter(s=>s.id!==id);
+  cur = sessions[0]||null; persist(); renderConv(); renderMsgs();
+}
+/* ===== 渲染 ===== */
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function renderConv(){
+  const el = document.getElementById('convList');
+  el.innerHTML = '';
+  if(!sessions.length){ sessions.unshift({id:Date.now(),title:'新对话',turns:[]}); cur = sessions[0]; }
+  for(const s of sessions.slice(0,8)){
+    const li = document.createElement('li');
+    li.className = cur&&cur.id===s.id?'on':'';
+    li.textContent = s.title;
+    li.onclick = ()=>openChat(s.id);
+    el.appendChild(li);
+  }
+  const del = document.createElement('li');
+  del.className='del'; del.textContent='清空全部会话';
+  del.onclick=()=>{ sessions=[]; newChat(); };
+  el.appendChild(del);
+  const st = document.getElementById('kbStats');
+  st.innerHTML = CATS.map(c=>`<div class="row"><span>${esc(c.name)}</span><span class="n">${c.n} 篇</span></div>`).join('');
+}
+function chip(q){ document.getElementById('q').value=q; ask(); }
+function routeBadge(hit){
+  return hit
+    ? '<span class="route hit"><span class="st"></span>工作流：知识库命中 → 基于知识库回答</span>'
+    : '<span class="route miss"><span class="st"></span>工作流：未命中 → 兜底转人工</span>';
+}
+function answerHTML(q, res){
+  const hit = res.length>0 && res[0].score >= 0.30;
+  let html = '<div class="turn"><div class="av u">员</div><div class="bub"><div class="q">'+esc(q)+'</div></div></div>';
+  html += '<div class="turn"><div class="av a">AI</div><div class="bub"><div class="a">'+routeBadge(hit);
+  if(hit){
+    const top = res[0];
+    const body = top.text.slice(0, 220) + (top.text.length>220?'……':'');
+    html += '<div>'+esc(body)+'</div>';
+    html += '<div class="cites"><div class="cite" style="font-size:12px;color:var(--text2);">检索到 '+res.length+' 条相关片段（top_k=3），回答内容取自知识库原文：</div>';
+    res.forEach((r,i)=>{
+      html += '<div class="cite"><span class="idx">'+(i+1)+'</span><div class="txt"><b>'+esc(r.doc)+'<span class="sc">相似度 '+r.score.toFixed(2)+' · '+esc(r.cat)+'</span></b><p>'+esc(r.text.slice(0,90))+'…</p></div></div>';
+    });
+    html += '</div>';
+  } else {
+    html += '<div class="nohit">企业知识库中<b>未检索到</b>与您问题相关的资料。为避免给出不准确信息，建议联系 <b>IT 服务台（4008 转 100）</b> 或提交服务工单，由人工为您处理。<br><br>可尝试更明确的问题，例如「VPN 账号如何申请？」或「邮箱发不出邮件怎么办？」。</div>';
+  }
+  html += '</div></div></div>';
+  return html;
+}
+function renderMsgs(){
+  const el = document.getElementById('msgs');
+  if(!cur || !cur.turns.length){
+    el.innerHTML = '<div class="greet"><h1>企业知识助手</h1><p>输入问题，或点击下方示例——前端真实执行「检索 → 路由 → 回答+引用 / 兜底转人工」。</p><div class="chips"><span onclick="chip(\'VPN 连接超时怎么办？\')">VPN 连接超时怎么办？</span><span onclick="chip(\'电脑蓝屏 MEMORY_MANAGEMENT 怎么处理？\')">电脑蓝屏怎么处理？</span><span onclick="chip(\'邮箱发不出邮件怎么办？\')">邮箱发不出邮件怎么办？</span><span onclick="chip(\'网关固件升级失败如何处理？\')">网关固件升级失败？</span><span onclick="chip(\'今天天气怎么样？\')">今天天气怎么样？</span></div></div>';
+    return;
+  }
+  el.innerHTML = cur.turns.map(t=>answerHTML(t.q, t.res)).join('');
+  el.scrollTop = el.scrollHeight;
+}
+function ask(){
+  const input = document.getElementById('q');
+  const q = input.value.trim();
+  if(!q) return;
+  if(!cur) newChat();
+  const res = search(q);
+  cur.turns.push({q, res});
+  if(cur.title==='新对话') cur.title = q.slice(0,14);
+  persist(); renderConv(); renderMsgs();
+  input.value='';
+}
+/* ===== 视图路由 ===== */
+function goto(v){
+  const map = {chat:['view-chat','view-chat-side'], kb:['view-kb'], flow:['view-flow']};
+  for(const k in map){ map[k].forEach(id=>{ document.getElementById(id).style.display = (k===v)?'':'none'; }); }
+  document.getElementById('tab-chat').className = v==='chat'?'on':'';
+  document.getElementById('tab-kb').className = v==='kb'?'on':'';
+  document.getElementById('tab-flow').className = v==='flow'?'on':'';
+  if(v==='kb') renderKB();
+  window.location.hash = v;
+}
+window.addEventListener('hashchange', ()=>{ const v = location.hash.slice(1)||'chat'; goto(v); });
+function renderKB(){
+  const el = document.getElementById('kbPage');
+  let html = '<h2>企业知识库</h2><p class="sub">5 个数据集 · 12 篇文档 · 内容来自本项目 seed/knowledge-base（可点击展开查看原文）</p>';
+  for(const c of CATS){
+    const docs = KB.filter(d=>d.category===c.name);
+    html += '<div class="cat" style="margin-bottom:14px;cursor:default;">';
+    html += '<b>'+esc(c.name)+'</b><div class="cnt">'+docs.length+' 篇文档</div><ul>';
+    for(const d of docs){
+      html += '<li style="cursor:pointer;" onclick="openDoc(\''+esc(d.title)+'\')">'+esc(d.title)+'</li>';
+    }
+    html += '</ul></div>';
+  }
+  el.innerHTML = html;
+}
+function openDoc(title){
+  const d = KB.find(x=>x.title===title);
+  const el = document.getElementById('kbPage');
+  el.innerHTML = '<span class="back" onclick="renderKB()">← 返回知识库</span><div class="doc"><h3>'+esc(d.title)+'<span class="cat-tag">'+esc(d.category)+'</span></h3><pre>'+esc(d.content)+'</pre></div>';
+}
+/* ===== 初始化 ===== */
+if(!sessions.length) newChat(); else { cur = sessions[0]; renderConv(); renderMsgs(); }
+goto('chat');
+</script>
+</body>
+</html>
