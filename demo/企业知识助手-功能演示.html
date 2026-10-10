@@ -70,13 +70,34 @@
   .av.a{background:var(--accent);}
   .bub{flex:1;min-width:0;}
   .q{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 16px;font-size:14px;line-height:1.7;}
-  .a{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px 16px;font-size:14px;line-height:1.75;}
+  .a{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px 16px;font-size:14px;line-height:1.75;position:relative;}
+  .copy{position:absolute;top:8px;right:8px;font-size:11px;color:var(--text3);background:transparent;border:1px solid var(--line);border-radius:6px;padding:2px 8px;cursor:pointer;}
+  .copy:hover{color:var(--accent);border-color:var(--accent);}
+  .loading{display:flex;align-items:center;gap:5px;color:var(--text3);font-size:13px;}
+  .loading i{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:ld 1s infinite ease-in-out;}
+  .loading i:nth-child(2){animation-delay:.15s;}
+  .loading i:nth-child(3){animation-delay:.3s;}
+  @keyframes ld{0%,80%,100%{opacity:.25;transform:scale(.85);}40%{opacity:1;transform:scale(1.15);}}
+  .md p{margin:4px 0;line-height:1.75;}
+  .md h3{font-size:14.5px;color:var(--ink);margin:10px 0 4px;}
+  .md h4{font-size:13.5px;color:var(--ink);margin:8px 0 3px;}
+  .md table{border-collapse:collapse;margin:8px 0;width:100%;font-size:13px;}
+  .md th,.md td{border:1px solid var(--line);padding:6px 10px;text-align:left;line-height:1.6;}
+  .md th{background:var(--bg);font-weight:600;color:var(--text);}
+  .md code{background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:1px 5px;font-size:12px;font-family:Consolas,Monaco,monospace;color:var(--accent);}
+  .md .li{padding-left:2px;}
+  .md .p{height:6px;}
   .route{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;border-radius:6px;padding:3px 10px;margin-bottom:10px;font-weight:600;}
   .route.hit{background:var(--green-soft);color:var(--green);}
   .route.miss{background:var(--accent-soft);color:var(--accent);}
   .route .st{width:6px;height:6px;border-radius:50%;background:currentColor;}
   .cites{margin-top:12px;border-top:1px dashed var(--line);padding-top:10px;}
-  .cite{display:flex;gap:10px;align-items:flex-start;background:var(--accent-soft);border:1px solid #FFD8D5;border-radius:10px;padding:9px 12px;margin-top:8px;}
+  .cite{display:flex;gap:10px;align-items:flex-start;background:var(--accent-soft);border:1px solid #FFD8D5;border-radius:10px;padding:9px 12px;margin-top:8px;cursor:pointer;}
+  .cite:hover{border-color:var(--accent);}
+  .cite .f{display:none;}
+  .cite.open{border-color:var(--accent);}
+  .cite.open .f{display:block;margin-top:8px;border-top:1px dashed rgba(0,0,0,.1);padding-top:8px;font-size:12px;color:var(--text2);}
+  .cite.open .s{display:none;}
   .cite .idx{background:var(--accent);color:#fff;border-radius:6px;font-size:11.5px;padding:2px 7px;flex-shrink:0;margin-top:1px;}
   .cite .txt b{font-size:13px;color:var(--text);display:block;margin-bottom:2px;}
   .cite .txt p{font-size:12px;color:var(--text2);line-height:1.55;}
@@ -122,6 +143,13 @@
     .flowline{flex-direction:column;}
     .farrow{transform:rotate(90deg);}
     .greet h1{font-size:17px;}
+  }
+  @media (max-width:640px){
+    .badge{display:none;}
+    .brand small{display:none;}
+    .brand{font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:118px;}
+    .tabs{margin-left:8px;gap:2px;}
+    .tabs a{font-size:12px;padding:5px 9px;}
   }
 </style>
 </head>
@@ -273,7 +301,7 @@ function segment(doc){
   const parts = doc.content.split(/\n\n+/);
   const segs = [];
   for(const p of parts){
-    const t = p.replace(/\|/g,' ').trim();
+    const t = p.trim();
     if(t.length >= 8) segs.push({doc:doc.title, cat:doc.category, text:t});
   }
   return segs;
@@ -325,11 +353,41 @@ function newChat(){
 }
 function openChat(id){ cur = sessions.find(s=>s.id===id); renderConv(); renderMsgs(); }
 function delChat(id){
+  if(!confirm('删除该会话？此操作不可恢复。')) return;
   sessions = sessions.filter(s=>s.id!==id);
   cur = sessions[0]||null; persist(); renderConv(); renderMsgs();
 }
 /* ===== 渲染 ===== */
 function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function md2html(t){
+  const inline = s=>esc(s)
+    .replace(/`([^`]+)`/g,'<code>$1</code>')
+    .replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>');
+  const lines = t.split('\n');
+  let html='', inTbl=false;
+  for(let i=0;i<lines.length;i++){
+    let l = lines[i];
+    if(/^\s*\|.*\|\s*$/.test(l)){
+      if(!inTbl){ inTbl=true; html+='<table>'; }
+      const cells = l.trim().replace(/^\||\|$/g,'').split('|').map(c=>c.trim());
+      if(cells.every(c=>/^:?-{2,}:?$/.test(c))) continue;
+      html += '<tr>'+cells.map(c=>'<td>'+inline(c)+'</td>').join('')+'</tr>';
+      continue;
+    } else if(inTbl){ inTbl=false; html+='</table>'; }
+    if(/^#{1,4}\s/.test(l)){
+      const m = l.match(/^(#{1,4})\s+(.*)/);
+      html += '<h'+(m[1].length+2)+'>'+inline(m[2])+'</h'+(m[1].length+2)+'>';
+    } else if(/^\s*[-*]\s+/.test(l)){
+      html += '<div class="li">• '+inline(l.replace(/^\s*[-*]\s+/,''))+'</div>';
+    } else if(!l.trim()){
+      html += '<div class="p"></div>';
+    } else {
+      html += '<p>'+inline(l)+'</p>';
+    }
+  }
+  if(inTbl) html+='</table>';
+  return html;
+}
 function renderConv(){
   const el = document.getElementById('convList');
   el.innerHTML = '';
@@ -343,10 +401,10 @@ function renderConv(){
   }
   const del = document.createElement('li');
   del.className='del'; del.textContent='清空全部会话';
-  del.onclick=()=>{ sessions=[]; newChat(); };
+  del.onclick=()=>{ if(!confirm('清空全部会话？此操作不可恢复。')) return; sessions=[]; newChat(); };
   el.appendChild(del);
   const st = document.getElementById('kbStats');
-  st.innerHTML = CATS.map(c=>`<div class="row"><span>${esc(c.name)}</span><span class="n">${c.n} 篇</span></div>`).join('');
+  st.innerHTML = CATS.map(c=>`<div class="row" onclick="goto('kb')" title="查看知识库"><span>${esc(c.name)}</span><span class="n">${c.n} 篇</span></div>`).join('');
 }
 function chip(q){ document.getElementById('q').value=q; ask(); }
 function routeBadge(hit){
@@ -357,14 +415,13 @@ function routeBadge(hit){
 function answerHTML(q, res){
   const hit = res.length>0 && res[0].score >= 0.30;
   let html = '<div class="turn"><div class="av u">员</div><div class="bub"><div class="q">'+esc(q)+'</div></div></div>';
-  html += '<div class="turn"><div class="av a">AI</div><div class="bub"><div class="a">'+routeBadge(hit);
+  html += '<div class="turn"><div class="av a">AI</div><div class="bub"><div class="a"><button class="copy" onclick="copyAns(this)">复制回答</button>'+routeBadge(hit);
   if(hit){
     const top = res[0];
-    const body = top.text.slice(0, 220) + (top.text.length>220?'……':'');
-    html += '<div>'+esc(body)+'</div>';
-    html += '<div class="cites"><div class="cite" style="font-size:12px;color:var(--text2);">检索到 '+res.length+' 条相关片段（top_k=3），回答内容取自知识库原文：</div>';
+    html += '<div class="md">'+md2html(top.text)+'</div>';
+    html += '<div class="cites"><div class="cite" style="cursor:default;font-size:12px;color:var(--text2);border-style:dashed;">本地真实检索 · 12 篇文档分段索引 · top_k=3 · 命中阈值 0.30，点击下方引用卡片可展开原文：</div>';
     res.forEach((r,i)=>{
-      html += '<div class="cite"><span class="idx">'+(i+1)+'</span><div class="txt"><b>'+esc(r.doc)+'<span class="sc">相似度 '+r.score.toFixed(2)+' · '+esc(r.cat)+'</span></b><p>'+esc(r.text.slice(0,90))+'…</p></div></div>';
+      html += '<div class="cite" onclick="this.classList.toggle(\'open\')"><span class="idx">'+(i+1)+'</span><div class="txt"><b>'+esc(r.doc)+'<span class="sc">相似度 '+r.score.toFixed(2)+' · '+esc(r.cat)+'</span></b><p class="s">'+esc(r.text.slice(0,80))+(r.text.length>80?'…':'')+'</p><div class="f md">'+md2html(r.text)+'</div></div></div>';
     });
     html += '</div>';
   } else {
@@ -382,16 +439,38 @@ function renderMsgs(){
   el.innerHTML = cur.turns.map(t=>answerHTML(t.q, t.res)).join('');
   el.scrollTop = el.scrollHeight;
 }
+function copyAns(btn){
+  const bub = btn.closest('.bub');
+  const txt = bub.innerText.replace('复制回答','').trim();
+  const done = ()=>{ btn.textContent='已复制'; setTimeout(()=>btn.textContent='复制回答',1500); };
+  const fallback = ()=>{
+    try{
+      const ta=document.createElement('textarea');
+      ta.value=txt; ta.style.position='fixed'; ta.style.opacity='0';
+      document.body.appendChild(ta); ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta); done();
+    }catch(e){}
+  };
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(done).catch(fallback);
+  } else fallback();
+}
 function ask(){
   const input = document.getElementById('q');
   const q = input.value.trim();
-  if(!q) return;
+  if(!q || document.getElementById('ldTurn')) return;
   if(!cur) newChat();
-  const res = search(q);
-  cur.turns.push({q, res});
-  if(cur.title==='新对话') cur.title = q.slice(0,14);
-  persist(); renderConv(); renderMsgs();
   input.value='';
+  const el = document.getElementById('msgs');
+  el.insertAdjacentHTML('beforeend','<div class="turn" id="ldTurn"><div class="av a">AI</div><div class="bub"><div class="a"><div class="loading"><i></i><i></i><i></i>&nbsp;正在检索企业知识库…</div></div></div></div>');
+  el.scrollTop = el.scrollHeight;
+  setTimeout(()=>{
+    const res = search(q);
+    cur.turns.push({q, res});
+    if(cur.title==='新对话') cur.title = q.slice(0,14);
+    persist(); renderConv(); renderMsgs();
+  },420);
 }
 /* ===== 视图路由 ===== */
 function goto(v){
