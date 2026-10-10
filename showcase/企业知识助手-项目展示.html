@@ -46,6 +46,23 @@
   .stat b i{font-style:normal;color:#FF9C92;}
   .stat span{font-size:12.5px;color:#B9C2CF;}
   .stat + .stat{border-left:1px solid rgba(255,255,255,.14);padding-left:24px;}
+  /* ===== 迭代时间轴 ===== */
+  .tl{margin-top:6px;}
+  .tl .row{display:grid;grid-template-columns:118px 26px 1fr;gap:0 16px;}
+  .tl .t1{text-align:right;font-size:13px;color:var(--text2);padding-top:3px;white-space:nowrap;}
+  .tl .line{position:relative;}
+  .tl .dot{position:absolute;top:7px;left:50%;transform:translateX(-50%);width:12px;height:12px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px rgba(255,156,146,.25);}
+  .tl .line::after{content:'';position:absolute;top:26px;bottom:0;left:50%;transform:translateX(-50%);width:2px;background:var(--line);}
+  .tl .row:last-child .line::after{display:none;}
+  .tl .card{margin-bottom:16px;padding:16px 20px;background:var(--card);border:1px solid var(--line);border-radius:12px;}
+  .tl .card h3{font-size:15px;color:var(--ink);margin-bottom:6px;}
+  .tl .card p{font-size:13px;color:var(--text2);line-height:1.75;}
+  .tl .card .tag{display:inline-block;font-size:11px;color:var(--accent);border:1px solid #FFD8D5;border-radius:5px;padding:1px 8px;margin:2px 6px 0 0;background:var(--accent-soft);}
+  @media (max-width:640px){
+    .tl .row{grid-template-columns:74px 20px 1fr;gap:0 8px;}
+    .tl .t1{font-size:12px;}
+    .tl .card{padding:13px 14px;}
+  }
   /* ===== 区块通用 ===== */
   section{padding:72px 0;}
   .sec-head{max-width:640px;margin-bottom:40px;}
@@ -141,6 +158,7 @@
     .card p,.feat p,.step p,.arow .v,.cnitem p,.dep .card li{font-size:14px;}
     .dep .card p{font-size:13.5px;}
     .stat span,.kicker{font-size:13px;}
+    .arow .v code{white-space:normal;word-break:break-all;}
   }
 </style>
 </head>
@@ -154,6 +172,7 @@
       <a href="#pain">企业痛点</a><a href="#arch">技术架构</a><a href="#feat">核心功能</a>
       <a href="#channels">多渠道</a><a href="#shots">界面展示</a><a href="#cn">国产化</a><a href="#case">企业案例</a><a href="#deploy">部署</a>
     </div>
+    <a class="gh" href="https://4kysy3b9xsj4q.doubaoapps.com/app/app_17ff8q3up6t" target="_blank" rel="noopener">在线演示</a>
     <a class="gh" href="https://github.com/xingjianlu573-dot/qiyexmzhishikuzhushou" target="_blank" rel="noopener">GitHub 仓库</a>
   </div>
 </nav>
@@ -166,7 +185,8 @@
     <h1>企业级 AI 知识助手<br><span class="em">Enterprise AI Knowledge Assistant</span></h1>
     <p class="sub">基于 Dify 平台改造的企业文档智能问答系统：员工与一线客服通过自然语言查询产品说明书、技术文档、IT 运维 SOP、售后流程与 FAQ。回答基于知识库生成并强制附引用来源，检索不到依据时自动转人工——从机制上减少 AI 幻觉。</p>
     <div class="cta">
-      <a class="btn solid" href="https://github.com/xingjianlu573-dot/qiyexmzhishikuzhushou" target="_blank" rel="noopener">查看项目源码</a>
+      <a class="btn solid" href="https://4kysy3b9xsj4q.doubaoapps.com/app/app_17ff8q3up6t" target="_blank" rel="noopener">在线体验演示站 →</a>
+      <a class="btn ghost" href="https://github.com/xingjianlu573-dot/qiyexmzhishikuzhushou" target="_blank" rel="noopener">查看项目源码</a>
       <a class="btn ghost" href="https://github.com/xingjianlu573-dot/qiyexmzhishikuzhushou/blob/main/README_CN.md" target="_blank" rel="noopener">中国大陆部署指南</a>
     </div>
     <div class="stats">
@@ -353,10 +373,49 @@
   </div>
 </section>
 
+<!-- ===== 迭代记录 ===== -->
+<section id="timeline">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="t">Iterations</div>
+      <h2>迭代记录</h2>
+      <p>五轮改造全部基于「配置 + 数据 + 文档层」，未改动上游 Dify 镜像——复用上游平台能力，聚焦企业场景落地。</p>
+    </div>
+    <div class="tl">
+      <div class="row">
+        <div class="t1">2026-10-05</div>
+        <div class="line"><span class="dot"></span></div>
+        <div class="card"><h3>第 1 轮 · 企业知识库改造</h3><p>内置 5 类 12 篇企业文档（产品说明书 / 技术文档 / IT 运维 SOP / 售后流程 / FAQ），实现文档上传 → 向量化 → 检索 → AI 回答 → 引用来源全链路；48 项种子数据校验 + 30 项 DSL 校验通过。<span class="tag">RAG</span><span class="tag">引用来源</span></p></div>
+      </div>
+      <div class="row">
+        <div class="t1">2026-10-05</div>
+        <div class="line"><span class="dot"></span></div>
+        <div class="card"><h3>第 2 轮 · 中国大陆访问优化</h3><p>.env.example 全量配置；AI Provider 抽象层支持 OpenAI / DeepSeek / 通义千问 / 智谱 AI / 月之暗面环境变量切换；国内镜像与三套部署方案（服务器 / 云平台 / 本地 Docker）；新增 README_CN.md。<span class="tag">国产模型</span><span class="tag">国内部署</span></p></div>
+      </div>
+      <div class="row">
+        <div class="t1">2026-10-10</div>
+        <div class="line"><span class="dot"></span></div>
+        <div class="card"><h3>第 3 轮 · 多渠道接入</h3><p>同一套工作流发布到员工日常入口：Web App / 企业微信（官方插件 16 万+ 安装）/ 飞书 / 钉钉 / Service API，附 docs/MULTI_PLATFORM.md 接入指南；展示页与演示站同步新增渠道视图。<span class="tag">多渠道</span><span class="tag">工作流</span></p></div>
+      </div>
+      <div class="row">
+        <div class="t1">2026-10-10</div>
+        <div class="line"><span class="dot"></span></div>
+        <div class="card"><h3>第 4 轮 · 体验与质量优化</h3><p>演示站：Markdown 表格渲染、检索加载态、复制回答、引用卡片展开原文、删除确认、hash 直开（#kb/#flow/#ch）、移动端导航适配；浏览器实测 + 自检 console 零错误。<span class="tag">UX</span><span class="tag">QA</span></p></div>
+      </div>
+      <div class="row">
+        <div class="t1">2026-10-10</div>
+        <div class="line"><span class="dot"></span></div>
+        <div class="card"><h3>第 5 轮 · 作品集与学习体系</h3><p>README 增加在线体验入口；面试知识点手册 docs/INTERVIEW_PREP.md（六层架构 / RAG / 防幻觉三层机制 / 15 个高频问答）；本项目展示页与功能演示站互跳互通。<span class="tag">作品集</span><span class="tag">面试准备</span></p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ===== 底部 ===== -->
 <footer>
   <div class="wrap in">
     <div><b>Enterprise AI Knowledge Assistant</b><br><span style="font-size:12.5px;">AI 应用实施工程师作品集项目 · RAG / Workflow / 国产模型适配 / 国内部署</span></div>
+    <a class="gh2" href="https://4kysy3b9xsj4q.doubaoapps.com/app/app_17ff8q3up6t" target="_blank" rel="noopener">在线体验演示站</a>
     <a class="gh2" href="https://github.com/xingjianlu573-dot/qiyexmzhishikuzhushou" target="_blank" rel="noopener">前往 GitHub</a>
     <div class="note">基于开源平台 Dify 改造（配置 + 数据 + 文档层，上游镜像零改造，遵循上游 LICENSE）· 展示页无外部依赖，中国大陆可直接访问</div>
   </div>

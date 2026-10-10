@@ -24,6 +24,11 @@
   .tabs a{font-size:13px;padding:6px 14px;border-radius:6px;color:#C8D0DA;}
   .tabs a.on{background:rgba(255,255,255,.16);color:#fff;}
   .badge{margin-left:auto;font-size:12px;border:1px solid rgba(255,156,146,.45);color:#FF9C92;border-radius:14px;padding:4px 12px;}
+  .demo-link{margin-left:14px;font-size:12.5px;color:#C8D0DA;border:1px solid rgba(255,255,255,.3);border-radius:14px;padding:5px 13px;white-space:nowrap;text-decoration:none;}
+  .demo-link:hover{border-color:#fff;color:#fff;}
+  .greet-link{margin-top:12px;}
+  .greet-link a{font-size:12.5px;color:var(--blue);text-decoration:none;}
+  .greet-link a:hover{text-decoration:underline;}
   /* ===== 渠道视图 ===== */
   .chgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
   .chan{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;}
@@ -150,6 +155,7 @@
     .brand{font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:118px;}
     .tabs{margin-left:8px;gap:2px;}
     .tabs a{font-size:12px;padding:5px 9px;}
+    .demo-link{margin-left:auto;font-size:12px;padding:4px 10px;}
   }
 </style>
 </head>
@@ -164,6 +170,7 @@
     <a href="#ch" id="tab-ch">渠道</a>
   </div>
   <span class="badge">演示模式 · 本地检索 · 无需联网</span>
+  <a class="demo-link" href="https://4kysy3b9xsj4q.doubaoapps.com/app/app_17ffddranur" target="_blank" rel="noopener">项目展示</a>
 </div>
 
 <main>
@@ -433,7 +440,7 @@ function answerHTML(q, res){
 function renderMsgs(){
   const el = document.getElementById('msgs');
   if(!cur || !cur.turns.length){
-    el.innerHTML = '<div class="greet"><h1>企业知识助手</h1><p>输入问题，或点击下方示例——前端真实执行「检索 → 路由 → 回答+引用 / 兜底转人工」。</p><div class="chips"><span onclick="chip(\'VPN 连接超时怎么办？\')">VPN 连接超时怎么办？</span><span onclick="chip(\'电脑蓝屏 MEMORY_MANAGEMENT 怎么处理？\')">电脑蓝屏怎么处理？</span><span onclick="chip(\'邮箱发不出邮件怎么办？\')">邮箱发不出邮件怎么办？</span><span onclick="chip(\'网关固件升级失败如何处理？\')">网关固件升级失败？</span><span onclick="chip(\'今天天气怎么样？\')">今天天气怎么样？</span></div></div>';
+    el.innerHTML = '<div class="greet"><h1>企业知识助手</h1><p>输入问题，或点击下方示例——前端真实执行「检索 → 路由 → 回答+引用 / 兜底转人工」。</p><div class="chips"><span onclick="chip(\'VPN 连接超时怎么办？\')">VPN 连接超时怎么办？</span><span onclick="chip(\'电脑蓝屏 MEMORY_MANAGEMENT 怎么处理？\')">电脑蓝屏怎么处理？</span><span onclick="chip(\'邮箱发不出邮件怎么办？\')">邮箱发不出邮件怎么办？</span><span onclick="chip(\'网关固件升级失败如何处理？\')">网关固件升级失败？</span><span onclick="chip(\'今天天气怎么样？\')">今天天气怎么样？</span></div><div class="greet-link"><a href="https://4kysy3b9xsj4q.doubaoapps.com/app/app_17ffddranur" target="_blank" rel="noopener">了解项目背景与架构 →</a></div></div>';
     return;
   }
   el.innerHTML = cur.turns.map(t=>answerHTML(t.q, t.res)).join('');
