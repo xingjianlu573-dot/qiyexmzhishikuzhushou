@@ -426,7 +426,7 @@ function openDoc(title){
 }
 /* ===== 初始化 ===== */
 if(!sessions.length) newChat(); else { cur = sessions[0]; renderConv(); renderMsgs(); }
-goto('chat');
+goto((location.hash.slice(1) || 'chat'));
 </script>
 </body>
 </html>
