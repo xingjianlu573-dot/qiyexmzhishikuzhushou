@@ -83,6 +83,7 @@ flowchart TB
 - **引用来源**：聊天界面渲染引用卡片，回答末尾标注「引用：[文档名]」，可回溯可审计。
 - **对话历史**：Web App 会话管理 + LLM 节点记忆窗口。
 - **工作流自动处理问题**：命中回答 / 未命中转人工，一次配置全自动路由。
+- **多渠道接入（IM 集成）**：企业微信 / 飞书 / 钉钉 / 微信公众号 / 个人微信等渠道直接提问（Dify 插件 / dify-on-wechat 桥接 / 自建事件网关三种模式），渠道共享同一知识库与工作流，会话按渠道用户隔离（见 [`docs/CHANNEL_INTEGRATION.md`](docs/CHANNEL_INTEGRATION.md)）。
 - **国产模型适配**：模型供应商抽象层支持 DeepSeek / 通义千问 / 智谱 AI / 月之暗面 / OpenAI 一键切换，零代码（见 [README_CN.md](README_CN.md) 第 4 节）。
 - **国内部署能力**：Docker 镜像加速配置、国内服务器/云平台/本地 Docker 三种部署方案，全链路国产化（见 [README_CN.md](README_CN.md)）。
 
@@ -115,6 +116,8 @@ flowchart TB
 | 环境变量 | `.env.example` 覆盖全部配置（站点/密钥/存储/模型/网络） |
 
 完整中文指南见 **[README_CN.md](README_CN.md)**，访问风险审查见 [docs/CN_ACCESS_REVIEW.md](docs/CN_ACCESS_REVIEW.md)。
+
+企微 / 飞书 / 钉钉 / 公众号等 **IM 多渠道接入**（插件 / 桥接 / 自建网关三种模式）见 [`docs/CHANNEL_INTEGRATION.md`](docs/CHANNEL_INTEGRATION.md)。
 
 ## 8. 快速开始（部署方式）
 
