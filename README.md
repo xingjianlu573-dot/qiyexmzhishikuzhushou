@@ -83,6 +83,7 @@ flowchart TB
 - **引用来源**：聊天界面渲染引用卡片，回答末尾标注「引用：[文档名]」，可回溯可审计。
 - **对话历史**：Web App 会话管理 + LLM 节点记忆窗口。
 - **工作流自动处理问题**：命中回答 / 未命中转人工，一次配置全自动路由。
+- **多渠道接入**：Web App 分享 / iframe 嵌入 / Service API / 企业微信群机器人 / 飞书 / 钉钉，让员工在常用 IM 内直接问答，引用来源与兜底逻辑跨渠道一致（见 [docs/MULTI_PLATFORM.md](docs/MULTI_PLATFORM.md)）。
 - **多渠道接入（IM 集成）**：企业微信 / 飞书 / 钉钉 / 微信公众号 / 个人微信等渠道直接提问（Dify 插件 / dify-on-wechat 桥接 / 自建事件网关三种模式），渠道共享同一知识库与工作流，会话按渠道用户隔离（见 [`docs/CHANNEL_INTEGRATION.md`](docs/CHANNEL_INTEGRATION.md)）。
 - **国产模型适配**：模型供应商抽象层支持 DeepSeek / 通义千问 / 智谱 AI / 月之暗面 / OpenAI 一键切换，零代码（见 [README_CN.md](README_CN.md) 第 4 节）。
 - **国内部署能力**：Docker 镜像加速配置、国内服务器/云平台/本地 Docker 三种部署方案，全链路国产化（见 [README_CN.md](README_CN.md)）。
@@ -195,7 +196,7 @@ enterprise-ai-knowledge-assistant/
 ├── README_CN.md       # 中国大陆部署指南
 ├── .env.example       # 全部环境变量示例（含国内模型/镜像项）
 ├── analysis/          # Dify 架构分析（含源码关键文件快照 dify-src/）
-├── docs/              # 改造方案 / 部署说明 / 企业案例 / 截图说明 / 风险审查 / 国产模型接入
+├── docs/              # 改造方案 / 部署说明 / 企业案例 / 截图说明 / 风险审查 / 国产模型接入 / 多渠道接入
 ├── seed/
 │   ├── knowledge-base/ # 12 篇演示知识库文档（5 分类）
 │   └── apps/           # 应用 DSL（高级对话 + 工作流）
