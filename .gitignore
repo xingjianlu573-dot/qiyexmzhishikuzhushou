@@ -5,3 +5,8 @@ demo/_preview.png
 demo/_kbdata.txt
 demo/debug_blue.py
 demo/make_preview.py
+demo/_backup/
+showcase/_backup/
+demo/_preview_ch.html
+demo/_preview_ch.png
+demo/make_preview_ch.py
