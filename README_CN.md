@@ -48,7 +48,11 @@ git clone --depth 1 https://github.com/langgenius/dify dify
 #   或从 Gitee 镜像仓库获取
 
 # 2) 应用国内部署配置（本项目提供）
-cp .env.example dify/docker/.env
+cp deploy/docker/.env.enterprise.example dify/docker/.env
+#    ⚠️ 复制后必须先编辑 dify/docker/.env：
+#      - 用 `openssl rand -base64 42` 生成随机值替换 SECRET_KEY
+#      - 把 DB_PASSWORD / REDIS_PASSWORD / WEAVIATE_API_KEY 改成随机强口令
+#      - 不要使用仓库自带的示例口令（演示值，公网部署即等于裸奔）
 
 # 3) 启动
 cd dify/docker && docker compose up -d
@@ -60,7 +64,7 @@ cd dify/docker && docker compose up -d
 ### 3.2 方案 B：国内云平台部署
 
 - **腾讯云轻量应用服务器 / 阿里云轻量服务器**：选 CentOS/Ubuntu 镜像 → 安装 Docker → 按方案 A 执行。购买时选**国内地域**（上海/广州/成都等），无需备案也可用 IP+端口访问（80 端口建议完成 ICP 备案后绑定域名）。
-- **容器服务 / 自建 K8s**：将 `deploy/docker/` 中的 Compose 配置转成工作负载，注意镜像同样走加速器。
+- **容器服务 / 自建 K8s**：将**上游 `dify/docker/` 目录中的 `docker-compose.yaml`** 转成工作负载（本项目 `deploy/docker/` 只提供 `.env.enterprise.example` 环境变量模板与镜像加速器配置，不含 Compose 文件），注意镜像同样走加速器。
 - **国内 PaaS（如 Sealos / 飞致云类平台）**：按平台引导导入 Compose 配置。
 
 ### 3.3 方案 C：本地 Docker 运行（演示/开发）
